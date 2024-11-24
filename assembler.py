@@ -16,6 +16,7 @@ INSTRUCTION_SET = {
     "SW": {"opcode": "001100", "format": Format.OP_R_R},
     "LWI": {"opcode": "10", "format": Format.OP_R_I},
     "LW": {"opcode": "111100", "format": Format.OP_R_R},
+    "MOV": {"opcode": "110000", "format": Format.OP_R_R},
     # Arithmetic
     "ADD": {"opcode": "110100", "format": Format.OP_R_R},
     "SUB": {"opcode": "110110", "format": Format.OP_R_R},
