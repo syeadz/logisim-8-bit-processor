@@ -31,6 +31,20 @@ SYMBOL_TABLE = dict()
 
 instruction_count = 0
 
+
+def generate_symbol_table(lines: list[str]):
+    pc = 0
+    for line in lines:
+        line = line.strip()  # Remove extra spaces or newline characters
+        if not line or line.startswith("#") or line.startswith(";"):  # Skip empty lines or comments
+            continue
+        mnemonic, _ = parse_line(line)
+        if mnemonic in INSTRUCTION_SET:
+            pc += 1
+        if mnemonic.endswith(':'):
+            SYMBOL_TABLE[mnemonic.strip(':')] = pc
+            
+
 def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
     mnemonic = parts[0].upper()
@@ -46,7 +60,12 @@ def assemble_instruction(mnemonic, operands) -> str:
     instr_type = instr["format"]
 
     if instr_type == Format.OP_DEST:
-        binary = opcode + f"{literal_eval(operands[0]):012b}"
+        dest = None
+        if operands[0].upper() in SYMBOL_TABLE:
+            dest = SYMBOL_TABLE[operands[0].upper()]
+        else:
+            dest = literal_eval(operands[0])
+        binary = opcode + f"{dest:010b}"
     elif instr_type == Format.OP_R_R:
         binary = opcode + f"{int(operands[1][1:]):04b}" + f"{int(operands[0][1:]):04b}"
     elif instr_type == Format.OP_R:
@@ -73,15 +92,17 @@ if __name__ == "__main__":
     try:
         file_name = sys.argv[1]
     except IndexError:
-        file_name = "add.hex"
+        file_name = "labels.asm"
 
     try:
         output_file = sys.argv[2]
     except IndexError:
-        output_file = "out.hex"
+        output_file = "labels.hex"
 
     with open(file_name, "r") as file:
         lines = file.readlines()
+
+    generate_symbol_table(lines)
 
     with open(output_file, "w") as f:
         f.write("v2.0 raw\n")  # Write the hex file header
@@ -90,7 +111,10 @@ if __name__ == "__main__":
             if not line or line.startswith("#") or line.startswith(";"):  # Skip empty lines or comments
                 continue
             mnemonic, operands = parse_line(line)
+            if mnemonic.endswith(':'):
+                continue
             binary = assemble_instruction(mnemonic, operands)
+            print(binary)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
 
