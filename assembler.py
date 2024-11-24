@@ -20,11 +20,14 @@ INSTRUCTION_SET = {
     "ADD": {"opcode": "110100", "format": Format.OP_R_R},
     "SUB": {"opcode": "110110", "format": Format.OP_R_R},
     # Jump
+    "CALL": {"opcode": "0000", "format": Format.OP_DEST},
     "GOTO": {"opcode": "0001", "format": Format.OP_DEST},
     "JPZ": {"opcode": "0100", "format": Format.OP_DEST},
     "JPNZ": {"opcode": "0101", "format": Format.OP_DEST},
     "JPC": {"opcode": "0110", "format": Format.OP_DEST},
     "JPNC": {"opcode": "0111", "format": Format.OP_DEST},
+    # System
+    "RET": {"opcode": "001000", "format": Format.OP_SYS},
 }
 
 SYMBOL_TABLE = dict()
@@ -74,6 +77,8 @@ def assemble_instruction(mnemonic, operands) -> str:
         binary = (
             opcode + f"{literal_eval(operands[1]):08b}" + f"{int(operands[0][1:]):04b}"
         )
+    elif instr_type == Format.OP_SYS:
+        binary = opcode + "00000000"
     else:
         raise ValueError(f"Unsupported instruction format: {instr_type}")
 
