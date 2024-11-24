@@ -102,7 +102,7 @@ if __name__ == "__main__":
     try:
         output_file = sys.argv[2]
     except IndexError:
-        output_file = "labels.hex"
+        output_file = f"{file_name[:-4]}.hex"
 
     with open(file_name, "r") as file:
         lines = file.readlines()
