@@ -18,8 +18,16 @@ INSTRUCTION_SET = {
     "LW": {"opcode": "111100", "format": Format.OP_R_R},
     "MOV": {"opcode": "110000", "format": Format.OP_R_R},
     # Arithmetic
+    "XNOR": {"opcode": "110001", "format": Format.OP_R_R},
+    "OR": {"opcode": "110010", "format": Format.OP_R_R},
     "ADD": {"opcode": "110100", "format": Format.OP_R_R},
+    "ADC": {"opcode": "110101", "format": Format.OP_R_R},
     "SUB": {"opcode": "110110", "format": Format.OP_R_R},
+    "SBC": {"opcode": "110111", "format": Format.OP_R_R},
+    "ASR": {"opcode": "111000", "format": Format.OP_R_R},
+    "RRC": {"opcode": "111001", "format": Format.OP_R_R},
+    "ROR": {"opcode": "111010", "format": Format.OP_R_R},
+    "ROL": {"opcode": "111011", "format": Format.OP_R_R},
     # Jump
     "CALL": {"opcode": "0000", "format": Format.OP_DEST},
     "GOTO": {"opcode": "0001", "format": Format.OP_DEST},
@@ -124,5 +132,5 @@ if __name__ == "__main__":
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
 
-    percentage = "{:.1%}".format(instruction_count/1000)
+    percentage = "{:.1%}".format(instruction_count/1024)
     print(f"Number of instructions: {instruction_count} ({percentage} of total memory).")
