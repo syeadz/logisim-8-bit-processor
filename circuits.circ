@@ -72,6 +72,7 @@
     <a name="appearance" val="logisim_evolution"/>
     <a name="circuit" val="CPU_8_BIT"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
+    <a name="downloadFrequency" val="8.0"/>
     <a name="simulationFrequency" val="1.0"/>
     <comp lib="0" loc="(1020,230)" name="Tunnel">
       <a name="label" val="mux_pc_branch"/>
@@ -452,7 +453,7 @@
       <a name="addrWidth" val="10"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 10 14
-2010 1400 402
+20a0 3001 401
 </a>
       <a name="dataWidth" val="14"/>
       <a name="label" val="Instruction_Memory"/>
@@ -1295,8 +1296,10 @@
     <wire from="(380,840)" to="(470,840)"/>
     <wire from="(400,110)" to="(400,220)"/>
     <wire from="(400,110)" to="(470,110)"/>
-    <wire from="(400,220)" to="(400,440)"/>
+    <wire from="(400,220)" to="(400,330)"/>
     <wire from="(400,220)" to="(470,220)"/>
+    <wire from="(400,330)" to="(400,440)"/>
+    <wire from="(400,330)" to="(470,330)"/>
     <wire from="(400,440)" to="(400,550)"/>
     <wire from="(400,440)" to="(470,440)"/>
     <wire from="(400,550)" to="(400,660)"/>
@@ -1627,8 +1630,12 @@
     <comp lib="2" loc="(750,390)" name="Multiplexer">
       <a name="width" val="8"/>
     </comp>
-    <comp loc="(620,130)" name="REGISTER_FILE_8_X_8"/>
-    <comp loc="(620,320)" name="REGISTER_FILE_8_X_8"/>
+    <comp loc="(620,130)" name="REGISTER_FILE_8_X_8">
+      <a name="label" val="register_file_low"/>
+    </comp>
+    <comp loc="(620,320)" name="REGISTER_FILE_8_X_8">
+      <a name="label" val="register_file_high"/>
+    </comp>
     <wire from="(180,140)" to="(370,140)"/>
     <wire from="(180,70)" to="(380,70)"/>
     <wire from="(210,210)" to="(230,210)"/>
