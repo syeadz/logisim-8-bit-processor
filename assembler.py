@@ -50,6 +50,7 @@ MACRO_SET = {
     "CMP": {"instructions": ["MOV $2, {rN}", "SUB $2, {rM}"], "format": Format.OP_R_R},
     "SETC": {"instructions": ["LWI $2, 0xFF", "INC $2"], "format": Format.OP_SYS},
     "CLC": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
+    "RLC": {"instructions": ["ADC {rN}, {rN}"], "format": Format.OP_R},
 }
 
 
