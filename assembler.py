@@ -49,10 +49,12 @@ MACRO_SET = {
     "XOR": {"instructions": ["XNOR {rN}, {rM}", "NOT {rN}"], "format": Format.OP_R_R},
     "CMP": {"instructions": ["MOV $2, {rN}", "SUB $2, {rM}"], "format": Format.OP_R_R},
     "SETC": {"instructions": ["LWI $2, 0xFF", "INC $2"], "format": Format.OP_SYS},
-    "CLC": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
+    "CLRC": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
     "RLC": {"instructions": ["ADC {rN}, {rN}"], "format": Format.OP_R},
     "SL0": {"instructions": ["ADD {rN}, {rN}"], "format": Format.OP_R},
     "SL1": {"instructions": ["ADD {rN}, {rN}", "INC {rN}"], "format": Format.OP_R},
+    "SR0": {"instructions": ["CLRC", "RLC {rN}"], "format": Format.OP_R},
+    "SR1": {"instructions": ["SETC", "RRC {rN}"], "format": Format.OP_R},
 }
 
 
