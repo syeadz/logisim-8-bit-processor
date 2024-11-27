@@ -24,10 +24,10 @@ INSTRUCTION_SET = {
     "ADC": {"opcode": "110101", "format": Format.OP_R_R},
     "SUB": {"opcode": "110110", "format": Format.OP_R_R},
     "SBC": {"opcode": "110111", "format": Format.OP_R_R},
-    "ASR": {"opcode": "111000", "format": Format.OP_R_R},
-    "RRC": {"opcode": "111001", "format": Format.OP_R_R},
-    "ROR": {"opcode": "111010", "format": Format.OP_R_R},
-    "ROL": {"opcode": "111011", "format": Format.OP_R_R},
+    "ASR": {"opcode": "111000", "format": Format.OP_R},
+    "RRC": {"opcode": "111001", "format": Format.OP_R},
+    "ROR": {"opcode": "111010", "format": Format.OP_R},
+    "ROL": {"opcode": "111011", "format": Format.OP_R},
     # Jump
     "CALL": {"opcode": "0000", "format": Format.OP_DEST},
     "GOTO": {"opcode": "0001", "format": Format.OP_DEST},
@@ -81,7 +81,7 @@ def assemble_instruction(mnemonic, operands) -> str:
     elif instr_type == Format.OP_R_R:
         binary = opcode + f"{int(operands[1][1:]):04b}" + f"{int(operands[0][1:]):04b}"
     elif instr_type == Format.OP_R:
-        binary = opcode + operands[0][:0]  # Placeholder logic, adjust as needed
+        binary = opcode + f"{int(operands[0][1:]):08b}"
     elif instr_type == Format.OP_R_I:
         binary = (
             opcode + f"{literal_eval(operands[1]):08b}" + f"{int(operands[0][1:]):04b}"
