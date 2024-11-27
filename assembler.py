@@ -39,29 +39,93 @@ INSTRUCTION_SET = {
     "RET": {"opcode": "001000", "format": Format.OP_SYS},
 }
 
+
+MACRO_SET = {
+    "NOP": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
+    "INC": {"instructions": ["ADD {rN}, $1"], "format": Format.OP_R},
+    "DEC": {"instructions": ["SUB {rN}, $1"], "format": Format.OP_R},
+    "NOT": {"instructions": ["XNOR {rN}, $0"], "format": Format.OP_R},
+}
+
+
 SYMBOL_TABLE = dict()
+
+LABEL_TABLE = dict()
 
 instruction_count = 0
 
 
-def generate_symbol_table(lines: list[str]):
+def first_pass(lines: list[str]) -> list[str]:
+    expanded_lines = []
+
     pc = 0
     for line in lines:
         line = line.strip()  # Remove extra spaces or newline characters
-        if not line or line.startswith("#") or line.startswith(";"):  # Skip empty lines or comments
+        if line.startswith("#define"):
+            pass
+        if line.startswith("#include"):
+            pass
+        if (
+            not line or line.startswith("#") or line.startswith(";")
+        ):  # Skip empty lines or comments
             continue
-        mnemonic, _ = parse_line(line)
+        mnemonic, operands = parse_line(line)
+        if mnemonic in MACRO_SET:  # Check if the mnemonic is a macro
+            macro_expansion = expand_macro(mnemonic, operands)
+            for expansion in macro_expansion:
+                expanded_lines.append(expansion)
+                pc += 1
+                print(expansion)
         if mnemonic in INSTRUCTION_SET:
+            expanded_lines.append(line)
             pc += 1
-        if mnemonic.endswith(':'):
-            SYMBOL_TABLE[mnemonic.strip(':')] = pc
-            
+        if mnemonic.endswith(":"):
+            SYMBOL_TABLE[mnemonic.strip(":")] = pc
+
+    return expanded_lines
+
 
 def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
     mnemonic = parts[0].upper()
     operands = [operand.strip(",") for operand in parts[1:]]
     return mnemonic, operands
+
+
+def expand_macro(macro: str, operands: list[str]) -> list[str]:
+    expansion_list = []
+    instructions = MACRO_SET[macro]["instructions"]
+    instr_type = MACRO_SET[macro]["format"]
+
+    if instr_type == Format.OP_DEST:
+        dest = operands[0]
+        for instruction in instructions:
+            instruction = instruction.format(dest=dest)
+            expansion_list.append(instruction)
+    elif instr_type == Format.OP_R_R:
+        rN = operands[0]
+        rM = operands[1]
+        for instruction in instructions:
+            instruction = instruction.format(rN=rN, rM=rM)
+            expansion_list.append(instruction)
+    elif instr_type == Format.OP_R:
+        rN = operands[0]
+        for instruction in instructions:
+            instruction = instruction.format(rN=rN)
+            expansion_list.append(instruction)
+    elif instr_type == Format.OP_R_I:
+        rN = operands[0]
+        imm = operands[1]
+        for instruction in instructions:
+            instruction = instruction.format(rN=rN, imm=imm)
+            expansion_list.append(instruction)
+    elif instr_type == Format.OP_SYS:
+        for instruction in instructions:
+            expansion_list.append(instruction)
+    else:
+        raise ValueError(f"Unsupported instruction format: {instr_type}")
+
+    return expansion_list
 
 
 def assemble_instruction(mnemonic, operands) -> str:
@@ -116,21 +180,25 @@ if __name__ == "__main__":
     with open(file_name, "r") as file:
         lines = file.readlines()
 
-    generate_symbol_table(lines)
+    expanded_lines = first_pass(lines)
 
     with open(output_file, "w") as f:
         f.write("v2.0 raw\n")  # Write the hex file header
-        for line in lines:
+        for line in expanded_lines:
             line = line.strip()  # Remove extra spaces or newline characters
-            if not line or line.startswith("#") or line.startswith(";"):  # Skip empty lines or comments
+            if (
+                not line or line.startswith("#") or line.startswith(";")
+            ):  # Skip empty lines or comments
                 continue
             mnemonic, operands = parse_line(line)
-            if mnemonic.endswith(':'):
+            if mnemonic.endswith(":"):
                 continue
             binary = assemble_instruction(mnemonic, operands)
             print(binary)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
 
-    percentage = "{:.1%}".format(instruction_count/1024)
-    print(f"Number of instructions: {instruction_count} ({percentage} of total memory).")
+    percentage = "{:.1%}".format(instruction_count / 1024)
+    print(
+        f"Number of instructions: {instruction_count} ({percentage} of total memory)."
+    )
