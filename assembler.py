@@ -46,6 +46,7 @@ MACRO_SET = {
     "DEC": {"instructions": ["SUB {rN}, $1"], "format": Format.OP_R},
     "NOT": {"instructions": ["XNOR {rN}, $0"], "format": Format.OP_R},
     "NEG": {"instructions": ["NOT {rN}", "INC {rN}"], "format": Format.OP_R},
+    "XOR": {"instructions": ["XNOR {rN}, {rM}", "NOT {rN}"], "format": Format.OP_R_R},
 }
 
 
