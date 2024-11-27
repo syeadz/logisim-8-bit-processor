@@ -45,6 +45,7 @@ MACRO_SET = {
     "INC": {"instructions": ["ADD {rN}, $1"], "format": Format.OP_R},
     "DEC": {"instructions": ["SUB {rN}, $1"], "format": Format.OP_R},
     "NOT": {"instructions": ["XNOR {rN}, $0"], "format": Format.OP_R},
+    "NEG": {"instructions": ["NOT {rN}", "INC {rN}"], "format": Format.OP_R},
 }
 
 
@@ -101,27 +102,47 @@ def expand_macro(macro: str, operands: list[str]) -> list[str]:
         dest = operands[0]
         for instruction in instructions:
             instruction = instruction.format(dest=dest)
-            expansion_list.append(instruction)
+            mnemonic, operands = parse_line(instruction)
+            if mnemonic in MACRO_SET:
+                expansion_list = expansion_list + expand_macro(mnemonic, operands)
+            else:
+                expansion_list.append(instruction)
     elif instr_type == Format.OP_R_R:
         rN = operands[0]
         rM = operands[1]
         for instruction in instructions:
             instruction = instruction.format(rN=rN, rM=rM)
-            expansion_list.append(instruction)
+            mnemonic, operands = parse_line(instruction)
+            if mnemonic in MACRO_SET:
+                expansion_list = expansion_list + expand_macro(mnemonic, operands)
+            else:
+                expansion_list.append(instruction)
     elif instr_type == Format.OP_R:
         rN = operands[0]
         for instruction in instructions:
             instruction = instruction.format(rN=rN)
-            expansion_list.append(instruction)
+            mnemonic, operands = parse_line(instruction)
+            if mnemonic in MACRO_SET:
+                expansion_list = expansion_list + expand_macro(mnemonic, operands)
+            else:
+                expansion_list.append(instruction)
     elif instr_type == Format.OP_R_I:
         rN = operands[0]
         imm = operands[1]
         for instruction in instructions:
             instruction = instruction.format(rN=rN, imm=imm)
-            expansion_list.append(instruction)
+            mnemonic, operands = parse_line(instruction)
+            if mnemonic in MACRO_SET:
+                expansion_list = expansion_list + expand_macro(mnemonic, operands)
+            else:
+                expansion_list.append(instruction)
     elif instr_type == Format.OP_SYS:
         for instruction in instructions:
-            expansion_list.append(instruction)
+            mnemonic, operands = parse_line(instruction)
+            if mnemonic in MACRO_SET:
+                expansion_list = expansion_list + expand_macro(mnemonic, operands)
+            else:
+                expansion_list.append(instruction)
     else:
         raise ValueError(f"Unsupported instruction format: {instr_type}")
 
