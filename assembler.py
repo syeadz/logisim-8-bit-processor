@@ -51,6 +51,8 @@ MACRO_SET = {
     "SETC": {"instructions": ["LWI $2, 0xFF", "INC $2"], "format": Format.OP_SYS},
     "CLC": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
     "RLC": {"instructions": ["ADC {rN}, {rN}"], "format": Format.OP_R},
+    "SL0": {"instructions": ["ADD {rN}, {rN}"], "format": Format.OP_R},
+    "SL1": {"instructions": ["ADD {rN}, {rN}", "INC {rN}"], "format": Format.OP_R},
 }
 
 
