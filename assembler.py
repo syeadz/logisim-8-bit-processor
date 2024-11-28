@@ -42,31 +42,39 @@ INSTRUCTION_SET = {
 
 
 MACRO_SET = {
-    "NOP": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
-    "INC": {"instructions": ["ADD {rN}, $1"], "format": Format.OP_R},
-    "DEC": {"instructions": ["SUB {rN}, $1"], "format": Format.OP_R},
-    "NOT": {"instructions": ["XNOR {rN}, $0"], "format": Format.OP_R},
+    "NOP": {"instructions": ["ADD $zero, $zero"], "format": Format.OP_SYS},
+    "INC": {"instructions": ["ADD {rN}, $one"], "format": Format.OP_R},
+    "DEC": {"instructions": ["SUB {rN}, $one"], "format": Format.OP_R},
+    "NOT": {"instructions": ["XNOR {rN}, $zero"], "format": Format.OP_R},
     "NEG": {"instructions": ["NOT {rN}", "INC {rN}"], "format": Format.OP_R},
     "XOR": {"instructions": ["XNOR {rN}, {rM}", "NOT {rN}"], "format": Format.OP_R_R},
-    "CMP": {"instructions": ["MOV $2, {rN}", "SUB $2, {rM}"], "format": Format.OP_R_R},
-    "SETC": {"instructions": ["LWI $2, 0xFF", "INC $2"], "format": Format.OP_SYS},
-    "CLRC": {"instructions": ["ADD $0, $0"], "format": Format.OP_SYS},
+    "CMP": {"instructions": ["MOV $temp, {rN}", "SUB $temp, {rM}"], "format": Format.OP_R_R},
+    "SETC": {"instructions": ["LWI $temp, 0xFF", "INC $temp"], "format": Format.OP_SYS},
+    "CLRC": {"instructions": ["ADD $zero, $zero"], "format": Format.OP_SYS},
     "RLC": {"instructions": ["ADC {rN}, {rN}"], "format": Format.OP_R},
     "SL0": {"instructions": ["ADD {rN}, {rN}"], "format": Format.OP_R},
     "SL1": {"instructions": ["ADD {rN}, {rN}", "INC {rN}"], "format": Format.OP_R},
     "SR0": {"instructions": ["CLRC", "RLC {rN}"], "format": Format.OP_R},
     "SR1": {"instructions": ["SETC", "RRC {rN}"], "format": Format.OP_R},
-    "PUSH": {"instructions": ["SW $3, {rN}", "INC $3"], "format": Format.OP_R},
-    "POP": {"instructions": ["DEC $3", "LW {rN}, $3"], "format": Format.OP_R},
+    "PUSH": {"instructions": ["SW $sp, {rN}", "INC $sp"], "format": Format.OP_R},
+    "POP": {"instructions": ["DEC $sp", "LW {rN}, $sp"], "format": Format.OP_R},
     "HALT": {},
-    "ANDI": {"instructions": ["LWI $2, {imm}", "AND {rN}, $2"], "format": Format.OP_R_I},
-    "ORI": {"instructions": ["LWI $2, {imm}", "OR {rN}, $2"], "format": Format.OP_R_I},
-    "XORI": {"instructions": ["LWI $2, {imm}", "XOR {rN}, $2"], "format": Format.OP_R_I},
-    "ADDI": {"instructions": ["LWI $2, {imm}", "ADD {rN}, $2"], "format": Format.OP_R_I},
-    "ADCI": {"instructions": ["LWI $2, {imm}", "ADC {rN}, $2"], "format": Format.OP_R_I},
-    "SUBI": {"instructions": ["LWI $2, {imm}", "SUB {rN}, $2"], "format": Format.OP_R_I},
-    "SBCI": {"instructions": ["LWI $2, {imm}", "SBC {rN}, $2"], "format": Format.OP_R_I},
-    "CLR": {"instructions": ["MOV {rN}, $0"], "format": Format.OP_R},
+    "ANDI": {"instructions": ["LWI $temp, {imm}", "AND {rN}, $temp"], "format": Format.OP_R_I},
+    "ORI": {"instructions": ["LWI $temp, {imm}", "OR {rN}, $temp"], "format": Format.OP_R_I},
+    "XORI": {"instructions": ["LWI $temp, {imm}", "XOR {rN}, $temp"], "format": Format.OP_R_I},
+    "ADDI": {"instructions": ["LWI $temp, {imm}", "ADD {rN}, $temp"], "format": Format.OP_R_I},
+    "ADCI": {"instructions": ["LWI $temp, {imm}", "ADC {rN}, $temp"], "format": Format.OP_R_I},
+    "SUBI": {"instructions": ["LWI $temp, {imm}", "SUB {rN}, $temp"], "format": Format.OP_R_I},
+    "SBCI": {"instructions": ["LWI $temp, {imm}", "SBC {rN}, $temp"], "format": Format.OP_R_I},
+    "CLR": {"instructions": ["MOV {rN}, $zero"], "format": Format.OP_R},
+}
+
+
+REG_MAP = {
+    "$zero": 0,
+    "$one": 1,
+    "$temp": 2,
+    "$sp": 3,
 }
 
 
@@ -75,7 +83,6 @@ SYMBOL_TABLE = dict()
 LABEL_TABLE = dict()
 
 instruction_count = 0
-
 
 def first_pass(lines: list[str]) -> list[str]:
     expanded_lines = []
@@ -114,6 +121,9 @@ def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
     mnemonic = parts[0].upper()
     operands = [operand.strip(",") for operand in parts[1:]]
+    for ind, operand in enumerate(operands):
+        if operand in REG_MAP:
+            operands[ind] = REG_MAP[operand]
     return mnemonic, operands
 
 
@@ -132,8 +142,8 @@ def expand_macro(macro: str, operands: list[str]) -> list[str]:
             else:
                 expansion_list.append(instruction)
     elif instr_type == Format.OP_R_R:
-        rN = operands[0]
-        rM = operands[1]
+        rN = operands[0].removeprefix('$')
+        rM = operands[1].removeprefix('$')
         for instruction in instructions:
             instruction = instruction.format(rN=rN, rM=rM)
             mnemonic, operands = parse_line(instruction)
@@ -142,7 +152,7 @@ def expand_macro(macro: str, operands: list[str]) -> list[str]:
             else:
                 expansion_list.append(instruction)
     elif instr_type == Format.OP_R:
-        rN = operands[0]
+        rN = operands[0].removeprefix('$')
         for instruction in instructions:
             instruction = instruction.format(rN=rN)
             mnemonic, operands = parse_line(instruction)
@@ -151,7 +161,7 @@ def expand_macro(macro: str, operands: list[str]) -> list[str]:
             else:
                 expansion_list.append(instruction)
     elif instr_type == Format.OP_R_I:
-        rN = operands[0]
+        rN = operands[0].removeprefix('$')
         imm = operands[1]
         for instruction in instructions:
             instruction = instruction.format(rN=rN, imm=imm)
