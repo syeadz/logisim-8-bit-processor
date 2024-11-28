@@ -133,6 +133,19 @@ def first_pass(lines: list[str]) -> list[str]:
         ):  # Skip empty lines or comments
             continue
         mnemonic, operands = parse_line(line)
+
+        if len(operands) == 1 and operands[0]:
+            if operands[0] in LABEL_TABLE:
+                operands[0] = LABEL_TABLE[operands[0]]
+                line = f"{mnemonic} {operands[0]}"
+        if len(operands) == 2:
+            if operands[0] in LABEL_TABLE:
+                operands[0] = LABEL_TABLE[operands[0]]
+                line = f"{mnemonic} {operands[0]}, {operands[1]}"
+            if operands[1] in LABEL_TABLE:
+                operands[1] = LABEL_TABLE[operands[1]]
+                line = f"{mnemonic} {operands[0]}, {operands[1]}"
+
         if mnemonic in MACRO_SET:  # Check if the mnemonic is a macro
             if mnemonic == "HALT":  # HALT, write pc
                 expanded_lines.append(f"goto {pc}")
@@ -164,7 +177,7 @@ def handle_include(file_name: str, lines: list[str], line_index: int) -> list[st
 def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
     mnemonic = parts[0].upper()
-    operands = [operand.strip(",") for operand in parts[1:]]
+    operands = [operand.strip(",") for operand in parts[1:3]]
     for ind, operand in enumerate(operands):
         if operand in REG_MAP:
             operands[ind] = REG_MAP[operand]
