@@ -20,6 +20,7 @@ INSTRUCTION_SET = {
     # Arithmetic
     "XNOR": {"opcode": "110001", "format": Format.OP_R_R},
     "OR": {"opcode": "110010", "format": Format.OP_R_R},
+    "AND": {"opcode": "110011", "format": Format.OP_R_R},
     "ADD": {"opcode": "110100", "format": Format.OP_R_R},
     "ADC": {"opcode": "110101", "format": Format.OP_R_R},
     "SUB": {"opcode": "110110", "format": Format.OP_R_R},
@@ -57,6 +58,14 @@ MACRO_SET = {
     "SR1": {"instructions": ["SETC", "RRC {rN}"], "format": Format.OP_R},
     "PUSH": {"instructions": ["SW $3, {rN}", "INC $3"], "format": Format.OP_R},
     "POP": {"instructions": ["DEC $3", "LW {rN}, $3"], "format": Format.OP_R},
+    "HALT": {},
+    "ANDI": {"instructions": ["LWI $2, {imm}", "AND {rN}, $2"], "format": Format.OP_R_I},
+    "ORI": {"instructions": ["LWI $2, {imm}", "OR {rN}, $2"], "format": Format.OP_R_I},
+    "XORI": {"instructions": ["LWI $2, {imm}", "XOR {rN}, $2"], "format": Format.OP_R_I},
+    "ADDI": {"instructions": ["LWI $2, {imm}", "ADD {rN}, $2"], "format": Format.OP_R_I},
+    "ADCI": {"instructions": ["LWI $2, {imm}", "ADC {rN}, $2"], "format": Format.OP_R_I},
+    "SUBI": {"instructions": ["LWI $2, {imm}", "SUB {rN}, $2"], "format": Format.OP_R_I},
+    "SBCI": {"instructions": ["LWI $2, {imm}", "SBC {rN}, $2"], "format": Format.OP_R_I},
 }
 
 
@@ -83,6 +92,9 @@ def first_pass(lines: list[str]) -> list[str]:
             continue
         mnemonic, operands = parse_line(line)
         if mnemonic in MACRO_SET:  # Check if the mnemonic is a macro
+            if mnemonic == "HALT":  # HALT, write pc
+                expanded_lines.append(f"goto {pc}")
+                continue
             macro_expansion = expand_macro(mnemonic, operands)
             for expansion in macro_expansion:
                 expanded_lines.append(expansion)
@@ -202,7 +214,7 @@ if __name__ == "__main__":
     try:
         file_name = sys.argv[1]
     except IndexError:
-        file_name = "labels.asm"
+        file_name = "arith.asm"
 
     try:
         output_file = sys.argv[2]
