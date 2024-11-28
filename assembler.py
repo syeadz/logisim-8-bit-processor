@@ -112,13 +112,22 @@ instruction_count = 0
 def first_pass(lines: list[str]) -> list[str]:
     expanded_lines = []
 
-    pc = 0
-    for line in lines:
-        line = line.strip()  # Remove extra spaces or newline characters
+    pc = 2 # we always have 2 instructions at the start
+    expanded_lines.append("lwi $one, 1")
+    expanded_lines.append("lwi $sp, 30") # stack pointer points at before last
+
+    ind = 0
+    while ind < len(lines):
+        line_original = lines[ind]
+        ind += 1
+
+        line = line_original.strip()  # Remove extra spaces or newline characters
         if line.startswith("#define"):
-            pass
+            parts = line.split()
+            LABEL_TABLE[parts[1]] = parts[2]
         if line.startswith("#include"):
-            pass
+            file_name = line.split()[1]
+            lines = handle_include(file_name, lines, lines.index(line_original))
         if (
             not line or line.startswith("#") or line.startswith(";")
         ):  # Skip empty lines or comments
@@ -140,6 +149,17 @@ def first_pass(lines: list[str]) -> list[str]:
 
     return expanded_lines
 
+def handle_include(file_name: str, lines: list[str], line_index: int) -> list[str]:
+    try:
+        with open(file_name, "r") as f:
+            included_lines = f.readlines()
+        # Insert included lines into the current lines
+        if len(lines) == line_index + 1:
+            return lines + included_lines
+        else:
+            return lines[:line_index] + included_lines + lines[line_index + 1:]
+    except FileNotFoundError:
+        raise ValueError(f"File not found: {file_name}")
 
 def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
@@ -253,7 +273,7 @@ if __name__ == "__main__":
     try:
         file_name = sys.argv[1]
     except IndexError:
-        file_name = "arith.asm"
+        file_name = "main.asm"
 
     try:
         output_file = sys.argv[2]
