@@ -279,7 +279,7 @@ if __name__ == "__main__":
             binary = assemble_instruction(mnemonic, operands)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
-            print(f"{binary}\t {line.split('#', 1)[0]}")
+            print(f"{binary[:2]} {binary[2:]}\t {line.split('#', 1)[0]}")
 
     percentage = "{:.1%}".format(instruction_count / 1024)
     print(
