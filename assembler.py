@@ -66,6 +66,7 @@ MACRO_SET = {
     "ADCI": {"instructions": ["LWI $2, {imm}", "ADC {rN}, $2"], "format": Format.OP_R_I},
     "SUBI": {"instructions": ["LWI $2, {imm}", "SUB {rN}, $2"], "format": Format.OP_R_I},
     "SBCI": {"instructions": ["LWI $2, {imm}", "SBC {rN}, $2"], "format": Format.OP_R_I},
+    "CLR": {"instructions": ["MOV {rN}, $0"], "format": Format.OP_R},
 }
 
 
