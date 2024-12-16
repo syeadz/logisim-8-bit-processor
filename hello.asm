@@ -3,15 +3,15 @@ lwi $1, 10 # load 10 into register 1
 
 lwi $3, 0x1f # set write port to bcd0 port
 sw  $3, $0 # write $0 to bcd0 port
-lwi $3, 0x2f # set write port to bcd1 port
+lwi $3, 0x3f # set write port to bcd1 port
 sw  $3, $1 # write $1 to bcd1 port
 
 add $0, $1 # $0 = $0 + $1
 
-lwi $3, 0x4f # set write port to bcd2 port
+lwi $3, 0x5f # set write port to bcd2 port
 sw  $3, $0 # write $0 to bcd2 port
 
-lwi $3, 0x6f # set write port to terminal port
+lwi $3, 0x7f # set write port to terminal port
 lwi $0, 72 # H
 sw  $3, $0 # write to terminal port
 
