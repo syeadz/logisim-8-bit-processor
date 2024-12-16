@@ -109,12 +109,13 @@ LABEL_TABLE = dict()
 instruction_count = 0
 
 
+# First pass to expand macros and store labels
 def first_pass(lines: list[str]) -> list[str]:
     expanded_lines = []
 
-    pc = 2 # we always have 2 instructions at the start
+    pc = 2  # we always have 2 instructions at the start
     expanded_lines.append("lwi $one, 1")
-    expanded_lines.append("lwi $sp, 30") # stack pointer points at before last
+    expanded_lines.append("lwi $sp, 30")  # stack pointer points at before last
 
     ind = 0
     while ind < len(lines):
@@ -162,6 +163,8 @@ def first_pass(lines: list[str]) -> list[str]:
 
     return expanded_lines
 
+
+# Handle include directive
 def handle_include(file_name: str, lines: list[str], line_index: int) -> list[str]:
     try:
         with open(file_name, "r") as f:
@@ -170,10 +173,12 @@ def handle_include(file_name: str, lines: list[str], line_index: int) -> list[st
         if len(lines) == line_index + 1:
             return lines + included_lines
         else:
-            return lines[:line_index] + included_lines + lines[line_index + 1:]
+            return lines[:line_index] + included_lines + lines[line_index + 1 :]
     except FileNotFoundError:
         raise ValueError(f"File not found: {file_name}")
 
+
+# Parse the line into mnemonic and operands
 def parse_line(line: str) -> tuple[str, list[str]]:
     parts = line.split()
     mnemonic = parts[0].upper()
@@ -184,6 +189,7 @@ def parse_line(line: str) -> tuple[str, list[str]]:
     return mnemonic, operands
 
 
+# Expand the macro into a list of instructions
 def expand_macro(macro: str, operands: list[str]) -> list[str]:
     expansion_list = []
     instructions = MACRO_SET[macro]["instructions"]
@@ -240,6 +246,7 @@ def expand_macro(macro: str, operands: list[str]) -> list[str]:
     return expansion_list
 
 
+# Assemble the instruction into binary
 def assemble_instruction(mnemonic, operands) -> str:
     if mnemonic not in INSTRUCTION_SET:
         raise ValueError(f"Unknown mnemonic: {mnemonic}")
@@ -263,9 +270,7 @@ def assemble_instruction(mnemonic, operands) -> str:
         binary = opcode + f"{int(rN):08b}"
     elif instr_type == Format.OP_R_I:
         rN = operands[0].removeprefix("$")
-        binary = (
-            opcode + f"{literal_eval(operands[1]):08b}" + f"{int(rN):04b}"
-        )
+        binary = opcode + f"{literal_eval(operands[1]):08b}" + f"{int(rN):04b}"
     elif instr_type == Format.OP_SYS:
         binary = opcode + "00000000"
     else:
@@ -278,11 +283,13 @@ def assemble_instruction(mnemonic, operands) -> str:
     return padded_binary
 
 
+# Convert binary string to hex
 def binary_to_hex(binary_str: str) -> str:
     return f"{int(binary_str, 2):04x}"
 
 
 if __name__ == "__main__":
+    # Read the input file
     try:
         file_name = sys.argv[1]
     except IndexError:
@@ -296,8 +303,10 @@ if __name__ == "__main__":
     with open(file_name, "r") as file:
         lines = file.readlines()
 
+    # First pass to expand macros and store labels
     expanded_lines = first_pass(lines)
 
+    # Second pass to assemble the instructions and write to the output file
     with open(output_file, "w") as f:
         f.write("v2.0 raw\n")  # Write the hex file header
         for line in expanded_lines:
@@ -314,6 +323,7 @@ if __name__ == "__main__":
             f.write(f"{hex_instruction} ")
             print(f"{binary[:2]} {binary[2:]}\t {line.split('#', 1)[0]}")
 
+    # Print the number of instructions and the percentage of total memory used
     percentage = "{:.1%}".format(instruction_count / 1024)
     print(
         f"Number of instructions: {instruction_count} ({percentage} of total memory)."
