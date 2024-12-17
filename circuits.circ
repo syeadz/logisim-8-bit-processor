@@ -74,7 +74,7 @@
     <a name="circuit" val="CPU_8_BIT"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
     <a name="downloadFrequency" val="8.0"/>
-    <a name="simulationFrequency" val="1.0"/>
+    <a name="simulationFrequency" val="64.0"/>
     <comp lib="0" loc="(1020,230)" name="Tunnel">
       <a name="label" val="mux_pc_branch"/>
     </comp>
@@ -499,8 +499,9 @@
       <a name="addrWidth" val="10"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 10 14
-2011 21e3 2bf3 2df4 2ff5 2006 27f7 c03
-c04 c75 c13 c14 c75 402
+2011 21e3 2007 2018 2009 20ca 21fd 23fe
+25ff c7d c8e 3487 307c 3087 30c8 3092
+36a2 1014 3419 409 c7f 415
 </a>
       <a name="dataWidth" val="14"/>
       <a name="label" val="Instruction_Memory"/>
@@ -522,10 +523,10 @@ c04 c75 c13 c14 c75 402
       <a name="color" val="Atari 2600 (7 bit)"/>
       <a name="cursor" val="No Cursor"/>
     </comp>
-    <comp lib="8" loc="(2032,1253)" name="Text">
+    <comp lib="8" loc="(2030,1250)" name="Text">
       <a name="text" val="term_data"/>
     </comp>
-    <comp lib="8" loc="(2274,1255)" name="Text">
+    <comp lib="8" loc="(2270,1255)" name="Text">
       <a name="text" val="vid_color"/>
     </comp>
     <comp lib="9" loc="(1170,940)" name="BCD_to_7_Segment_decoder"/>
