@@ -306,6 +306,7 @@ if __name__ == "__main__":
     # First pass to expand macros and store labels
     expanded_lines = first_pass(lines)
 
+    count = 0
     # Second pass to assemble the instructions and write to the output file
     with open(output_file, "w") as f:
         f.write("v2.0 raw\n")  # Write the hex file header
@@ -321,7 +322,8 @@ if __name__ == "__main__":
             binary = assemble_instruction(mnemonic, operands)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
-            print(f"{binary[:2]} {binary[2:]}\t {line.split('#', 1)[0]}")
+            print(f"{count}:\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
+            count += 1
 
     # Print the number of instructions and the percentage of total memory used
     percentage = "{:.1%}".format(instruction_count / 1024)
