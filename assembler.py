@@ -326,6 +326,7 @@ if __name__ == "__main__":
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
             # todo: replace label name with address
+            # todo: print labels, more debug info
             print(f"{count}:\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
             count += 1
 
