@@ -327,7 +327,7 @@ if __name__ == "__main__":
             f.write(f"{hex_instruction} ")
             # todo: replace label name with address
             # todo: print labels, more debug info
-            print(f"{count}:\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
+            print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
             count += 1
 
     # Print the number of instructions and the percentage of total memory used
