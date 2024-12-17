@@ -1,3 +1,4 @@
+main:
 lwi $0, 5 # load 5 into register 0
 lwi $1, 10 # load 10 into register 1
 

@@ -4,6 +4,7 @@
 #define bcd1 0x3F
 #define bcd2 0x5F
 
+main:
 lwi $7, 0 # fib 0
 lwi $8, 1 # fib 1
 
