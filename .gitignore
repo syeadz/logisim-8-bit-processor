@@ -1,3 +1,5 @@
 *.hex
 
 *_backup.circ
+
+test.asm
