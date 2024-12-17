@@ -113,9 +113,10 @@ instruction_count = 0
 def first_pass(lines: list[str]) -> list[str]:
     expanded_lines = []
 
-    pc = 2  # we always have 2 instructions at the start
+    pc = 3  # we always have 3 instructions at the start
     expanded_lines.append("lwi $one, 1")
     expanded_lines.append("lwi $sp, 30")  # stack pointer points at before last
+    expanded_lines.append("goto main")
 
     ind = 0
     while ind < len(lines):
@@ -125,7 +126,7 @@ def first_pass(lines: list[str]) -> list[str]:
         line = line_original.strip()  # Remove extra spaces or newline characters
         if line.startswith("#define"):
             parts = line.split()
-            LABEL_TABLE[parts[1]] = parts[2]
+            SYMBOL_TABLE[parts[1]] = parts[2]
         if line.startswith("#include"):
             file_name = line.split()[1]
             lines = handle_include(file_name, lines, lines.index(line_original))
@@ -136,15 +137,15 @@ def first_pass(lines: list[str]) -> list[str]:
         mnemonic, operands = parse_line(line)
 
         if len(operands) == 1 and operands[0]:
-            if operands[0] in LABEL_TABLE:
-                operands[0] = LABEL_TABLE[operands[0]]
+            if operands[0] in SYMBOL_TABLE:
+                operands[0] = SYMBOL_TABLE[operands[0]]
                 line = f"{mnemonic} {operands[0]}"
         if len(operands) == 2:
-            if operands[0] in LABEL_TABLE:
-                operands[0] = LABEL_TABLE[operands[0]]
+            if operands[0] in SYMBOL_TABLE:
+                operands[0] = SYMBOL_TABLE[operands[0]]
                 line = f"{mnemonic} {operands[0]}, {operands[1]}"
-            if operands[1] in LABEL_TABLE:
-                operands[1] = LABEL_TABLE[operands[1]]
+            if operands[1] in SYMBOL_TABLE:
+                operands[1] = SYMBOL_TABLE[operands[1]]
                 line = f"{mnemonic} {operands[0]}, {operands[1]}"
 
         if mnemonic in MACRO_SET:  # Check if the mnemonic is a macro
@@ -159,8 +160,10 @@ def first_pass(lines: list[str]) -> list[str]:
             expanded_lines.append(line)
             pc += 1
         if mnemonic.endswith(":"):
-            SYMBOL_TABLE[mnemonic.strip(":")] = pc
+            LABEL_TABLE[mnemonic.strip(":")] = pc
 
+    if "MAIN" not in LABEL_TABLE:
+        raise ValueError("No main label found in the program")
     return expanded_lines
 
 
@@ -256,8 +259,8 @@ def assemble_instruction(mnemonic, operands) -> str:
 
     if instr_type == Format.OP_DEST:
         dest = None
-        if operands[0].upper() in SYMBOL_TABLE:
-            dest = SYMBOL_TABLE[operands[0].upper()]
+        if operands[0].upper() in LABEL_TABLE:
+            dest = LABEL_TABLE[operands[0].upper()]
         else:
             dest = literal_eval(operands[0])
         binary = opcode + f"{dest:010b}"
@@ -322,6 +325,7 @@ if __name__ == "__main__":
             binary = assemble_instruction(mnemonic, operands)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
+            # todo: replace label name with address
             print(f"{count}:\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
             count += 1
 
