@@ -128,7 +128,7 @@ def first_pass(lines: list[str]) -> list[str]:
             parts = line.split()
             SYMBOL_TABLE[parts[1]] = parts[2]
         if line.startswith("#include"):
-            file_name = line.split()[1]
+            file_name = line.split()[1].strip('"')
             lines = handle_include(file_name, lines, lines.index(line_original))
         if (
             not line or line.startswith("#") or line.startswith(";")
