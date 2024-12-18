@@ -204,6 +204,46 @@ t_print_newline:
 lwi $4, 0x0A
 goto t_print
 
+t_print_0:
+lwi $4, 0x30
+goto t_print
+
+t_print_1:
+lwi $4, 0x31
+goto t_print
+
+t_print_2:
+lwi $4, 0x32
+goto t_print
+
+t_print_3:
+lwi $4, 0x33
+goto t_print
+
+t_print_4:
+lwi $4, 0x34
+goto t_print
+
+t_print_5:
+lwi $4, 0x35
+goto t_print
+
+t_print_6:
+lwi $4, 0x36
+goto t_print
+
+t_print_7:
+lwi $4, 0x37
+goto t_print
+
+t_print_8:
+lwi $4, 0x38
+goto t_print
+
+t_print_9:
+lwi $4, 0x39
+goto t_print
+
 ; Print an ascii character stored in register $4 and return
 t_print:
 lwi $2, T_TERM_ADDR
