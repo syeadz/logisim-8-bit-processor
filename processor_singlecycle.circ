@@ -77,7 +77,7 @@
     <a name="circuit" val="CPU_8_BIT"/>
     <a name="circuitnamedboxfixedsize" val="true"/>
     <a name="downloadFrequency" val="8.0"/>
-    <a name="simulationFrequency" val="1.0"/>
+    <a name="simulationFrequency" val="64.0"/>
     <comp lib="0" loc="(1020,230)" name="Tunnel">
       <a name="label" val="mux_pc_branch"/>
     </comp>
@@ -501,9 +501,12 @@
       <a name="addrWidth" val="10"/>
       <a name="appearance" val="logisim_evolution"/>
       <a name="contents">addr/data: 10 14
-2011 21e3 412 3002 3652 100f 3002 3662
-100f 3002 3662 1011 3457 3616 409 2007
-800 800 2055 2036 3 29f2 c72 417
+2011 21e3 423 3007 3002 3652 1020 3002
+3662 1020 3002 3662 1022 3457 3616 40a
+3007 3002 3652 1020 3002 3662 1020 3052
+3662 1822 3665 3417 3052 3602 1022 417
+2007 800 800 2115 2056 10 25f2 c72
+21f2 c52 42a
 </a>
       <a name="dataWidth" val="14"/>
       <a name="label" val="Instruction_Memory"/>
@@ -2900,8 +2903,8 @@
     <wire from="(790,170)" to="(800,170)"/>
     <wire from="(790,2170)" to="(790,2260)"/>
     <wire from="(790,2260)" to="(790,2300)"/>
-    <wire from="(790,2300)" to="(790,2340)"/>
     <wire from="(790,2340)" to="(790,2380)"/>
+    <wire from="(790,2340)" to="(930,2340)"/>
     <wire from="(80,1010)" to="(1070,1010)"/>
     <wire from="(80,2240)" to="(100,2240)"/>
     <wire from="(80,2250)" to="(110,2250)"/>
@@ -2935,6 +2938,7 @@
     <wire from="(910,2170)" to="(930,2170)"/>
     <wire from="(930,2090)" to="(930,2170)"/>
     <wire from="(930,2170)" to="(1000,2170)"/>
+    <wire from="(930,2170)" to="(930,2340)"/>
     <wire from="(940,2490)" to="(1020,2490)"/>
     <wire from="(940,2530)" to="(1020,2530)"/>
   </circuit>
