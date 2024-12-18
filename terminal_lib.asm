@@ -200,6 +200,10 @@ t_print_at:
 lwi $4, 0x40
 goto t_print
 
+t_print_newline:
+lwi $4, 0x0A
+goto t_print
+
 ; Print an ascii character stored in register $4 and return
 t_print:
 lwi $2, T_TERM_ADDR
