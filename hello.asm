@@ -12,6 +12,10 @@ add $0, $1 # $0 = $0 + $1
 lwi $3, 0x5f # set write port to bcd2 port
 sw  $3, $0 # write $0 to bcd2 port
 
+lwi $3, 0x9f # set write port to bcd3 port
+lwi $12, 255 # load 255 into register 12
+sw $3, $12 # write $12 to bcd3 port
+
 lwi $3, 0x7f # set write port to terminal port
 lwi $0, 72 # H
 sw  $3, $0 # write to terminal port
@@ -64,4 +68,4 @@ sw  $3, $0
 lwi $0, 0 # null
 sw  $3, $0
 
-goto 44 # infinite loop
+halt
