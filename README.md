@@ -4,6 +4,32 @@
 
 Some changes were made to simplify the design and instruction set, notably there are no interrupts and port addressing is limited. Other than that, most of the instruction set has been implemented. There is also an assembler written in Python that can convert assembly instructions to hex code that can be loaded into the ROM on Logisim, allowing you to run programs within Logisim and see how the processor works in real time.
 
+There are a couple libraries and examples written in assembly that can be run on the processor.
+
+## How to assemble and run
+
+To assemble an assembly file, run the assembler with the assembly file as an argument. This will output a hex file that can be loaded into the ROM in Logisim.
+
+```bash
+python assembler.py examples/hello.asm
+```
+
+This will generate a file called `hello.hex` that can be loaded into the ROM in Logisim. Simply right-click on the ROM module labeled `Instruction_Memory` and select `Load Image...` and select the hex file. Then you can click on the simulate tab on the top-left and click on enable clock ticks (third circular button from the left) to start the processor. You can modify the clock speed under the `Simulate` tab at the top. The processor will run the program and you can see the output in the terminal or video output. You can reset the processor by clicking on the `Reset_Button` in the top left of the design.
+
+## Libraries and Examples
+
+### Libraries
+
+* `lib/terminal_lib.asm` - Library for writing to the terminal
+* `lib/video_lib.asm` - Library for writing to the video output
+* `lib/bcd_lib.asm` - Library for writing to the BCD registers and displaying numbers on the 7-segment displays
+* `lib/math_lib.asm` - Library for basic math operations (multiplication, division)
+
+### Examples
+
+* `examples/terminal.asm` - Writes HELLO WORLD! to the terminal as well as multiplication and division operations (using math_lib.asm). Operands can be changed by modifying the #define at the top of the file.
+* `examples/video.asm` - Writes a pattern to the video output with squares and colors
+
 ## Instruction Set
 
 Instruction | Description
@@ -63,7 +89,7 @@ halt | Halt processor
 
 ## Memory addressing
 
-* 8-bit memory addresses, first 5 bits for RAM, last 3 bits for specific memory ports [xxx][y yyyy]
+* 8-bit memory addresses, first 5 bits for RAM, last 3 bits for specific memory ports xxxy yyyy
 * Can store 8-bit words to RAM locations 0x00 to 0x1E
 * 8 memory locations are mapped to ports. These ports are linked to different devices and registers in the logisim design.
   * Port 0 (BCD0 Register): 0x1F
