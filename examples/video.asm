@@ -1,7 +1,7 @@
 ; Showcase for video library
 ; Draws squares along the screen
 
-#include video_lib.asm
+#include lib/video_lib.asm
 
 main:
     lwi $7, 16 ; size of square side
