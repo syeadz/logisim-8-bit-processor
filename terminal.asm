@@ -14,62 +14,62 @@
 #define DIV_B 0x2F
 
 main:
-; Print "HELLO WORLD!"
-call t_print_h
-call t_print_e
-call t_print_l
-call t_print_l
-call t_print_o
-call t_print_space
-call t_print_w
-call t_print_o
-call t_print_r
-call t_print_l
-call t_print_d
-call t_print_exclamation
+    ; Print "HELLO WORLD!"
+    call t_print_h
+    call t_print_e
+    call t_print_l
+    call t_print_l
+    call t_print_o
+    call t_print_space
+    call t_print_w
+    call t_print_o
+    call t_print_r
+    call t_print_l
+    call t_print_d
+    call t_print_exclamation
 
-call t_print_newline
+    call t_print_newline
 
-; Multiply and divide two numbers
-lwi $7, MUL_A
-mov $5, $7
-call t_print_reg_num
-call t_print_space
-call t_print_multiply
-call t_print_space
-lwi $7, MUL_B
-mov $6, $7
-call t_print_reg_num
-call t_print_space
-call t_print_equal
-call t_print_space
-call m_mul8
-call t_print_reg_num
+    ; Multiply and divide two numbers
+    lwi $7, MUL_A
+    mov $5, $7
+    call t_print_reg_num
+    call t_print_space
+    call t_print_multiply
+    call t_print_space
+    lwi $7, MUL_B
+    mov $6, $7
+    call t_print_reg_num
+    call t_print_space
+    call t_print_equal
+    call t_print_space
+    call m_mul8
+    call t_print_reg_num
 
-call t_print_newline
+    call t_print_newline
 
-lwi $7, DIV_A
-mov $5, $7
-call t_print_reg_num
-call t_print_space
-call t_print_divide
-call t_print_space
-lwi $7, DIV_B
-mov $6, $7
-call t_print_reg_num
-call t_print_space
-call t_print_equal
-call t_print_space
-call m_div8
-call t_print_reg_num
-call t_print_comma
-call t_print_space
-call t_print_r
-call t_print_e
-call t_print_m
-call t_print_colon
-call t_print_space
-mov $7, $5
-call t_print_reg_num
+    lwi $7, DIV_A
+    mov $5, $7
+    call t_print_reg_num
+    call t_print_space
+    call t_print_divide
+    call t_print_space
+    lwi $7, DIV_B
+    mov $6, $7
+    call t_print_reg_num
+    call t_print_space
+    call t_print_equal
+    call t_print_space
+    call m_div8
+    call t_print_reg_num
+    call t_print_comma
+    call t_print_space
+    call t_print_r
+    call t_print_e
+    call t_print_m
+    call t_print_colon
+    call t_print_space
+    mov $7, $5
+    call t_print_reg_num
 
-halt
+    halt
