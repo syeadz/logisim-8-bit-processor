@@ -160,6 +160,7 @@ def first_pass(lines: list[str]) -> list[str]:
             expanded_lines.append(line)
             pc += 1
         if mnemonic.endswith(":"):
+            expanded_lines.append(line)
             LABEL_TABLE[mnemonic.strip(":")] = pc
 
     if "MAIN" not in LABEL_TABLE:
@@ -296,7 +297,7 @@ if __name__ == "__main__":
     try:
         file_name = sys.argv[1]
     except IndexError:
-        file_name = "main.asm"
+        file_name = "terminal.asm"
 
     try:
         output_file = sys.argv[2]
@@ -321,13 +322,15 @@ if __name__ == "__main__":
                 continue
             mnemonic, operands = parse_line(line)
             if mnemonic.endswith(":"):
+                print(f"    {line}")
                 continue
             binary = assemble_instruction(mnemonic, operands)
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
-            # todo: replace label name with address
-            # todo: print labels, more debug info
-            print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
+            if operands and operands[0].upper() in LABEL_TABLE:
+                print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]} ({hex(LABEL_TABLE[operands[0].upper()])})")
+            else:
+                print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
             count += 1
 
     # Print the number of instructions and the percentage of total memory used
