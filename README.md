@@ -70,14 +70,14 @@ halt | Halt processor
   * Port 1 (BCD1 Register): 0x3F
   * Port 2 (BCD2 Register): 0x5F
   * Port 3 (Terminal Input): 0x7F
-  * Port 4 (Unused): 0x9F
+  * Port 4 (BCD3 Register): 0x9F
   * Port 5 (Video X register): 0xBF
   * Port 6 (Video Y register): 0xDF
   * Port 7 (Video Color Input): 0xFF
 
 ## Logisim Ports
 
-In the Logisim circuit, you have access to 3 BCDs, 1 Terminal, and 1 128 x 128 Video Output with Atari 2600 color palette (7 bits).
+In the Logisim circuit, you have access to 4 BCDs, 1 Terminal, and 1 128 x 128 Video Output with Atari 2600 color palette (7 bits).
 
 * Bit 7 in terminal input clears the terminal, and bit 7 in video color input clears the video output.
 
@@ -86,5 +86,5 @@ In the Logisim circuit, you have access to 3 BCDs, 1 Terminal, and 1 128 x 128 V
 * No interrupts
 * Can only store to ram locations 0x00 to 0x1E
 * Maximum of 1024 instructions
-* Max call depth of 16
+* Max call depth of 32
 * Max stack size of 31, shared with RAM
