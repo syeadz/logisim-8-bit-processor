@@ -59,8 +59,8 @@ MACRO_SET = {
     "SL1": {"instructions": ["ADD {rN}, {rN}", "INC {rN}"], "format": Format.OP_R},
     "SR0": {"instructions": ["CLRC", "RLC {rN}"], "format": Format.OP_R},
     "SR1": {"instructions": ["SETC", "RRC {rN}"], "format": Format.OP_R},
-    "PUSH": {"instructions": ["SW $sp, {rN}", "INC $sp"], "format": Format.OP_R},
-    "POP": {"instructions": ["DEC $sp", "LW {rN}, $sp"], "format": Format.OP_R},
+    "PUSH": {"instructions": ["SW $sp, {rN}", "DEC $sp"], "format": Format.OP_R},
+    "POP": {"instructions": ["INC $sp", "LW {rN}, $sp"], "format": Format.OP_R},
     "HALT": {},
     "ANDI": {
         "instructions": ["LWI $temp, {imm}", "AND {rN}, $temp"],
