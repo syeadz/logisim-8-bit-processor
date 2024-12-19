@@ -1,6 +1,7 @@
 import sys
 from enum import Enum
 from ast import literal_eval
+from pathlib import Path
 
 
 class Format(Enum):
@@ -128,6 +129,7 @@ def first_pass(lines: list[str]) -> list[str]:
             parts = line.split()
             SYMBOL_TABLE[parts[1]] = parts[2]
         if line.startswith("#include"):
+            # file_name can include path
             file_name = line.split()[1].strip('"')
             lines = handle_include(file_name, lines, lines.index(line_original))
             ind -= 1
@@ -169,10 +171,12 @@ def first_pass(lines: list[str]) -> list[str]:
     return expanded_lines
 
 
-# Handle include directive
 def handle_include(file_name: str, lines: list[str], line_index: int) -> list[str]:
+    # Resolve the file path to an absolute path
+    file_path = Path(file_name).resolve()
+
     try:
-        with open(file_name, "r") as f:
+        with open(file_path, "r") as f:
             included_lines = f.readlines()
         # Insert included lines into the current lines
         if len(lines) == line_index + 1:
@@ -180,7 +184,7 @@ def handle_include(file_name: str, lines: list[str], line_index: int) -> list[st
         else:
             return lines[:line_index] + included_lines + lines[line_index + 1 :]
     except FileNotFoundError:
-        raise ValueError(f"File not found: {file_name}")
+        raise ValueError(f"File not found: {file_path}")
 
 
 # Parse the line into mnemonic and operands
@@ -303,7 +307,8 @@ if __name__ == "__main__":
     try:
         output_file = sys.argv[2]
     except IndexError:
-        output_file = f"{file_name[:-4]}.hex"
+        just_file_name = file_name.split("/")[-1]
+        output_file = f"{just_file_name[:-4]}.hex"
 
     with open(file_name, "r") as file:
         lines = file.readlines()

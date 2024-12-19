@@ -3,7 +3,7 @@
 ; It also demonstrates the use of the math library to multiply and divide two numbers
 ; which is then printed to the terminal
 
-#include terminal_lib.asm
+#include lib/terminal_lib.asm
 
 ; Constants for multiplication and division
 ; You can modify these values to test different numbers
