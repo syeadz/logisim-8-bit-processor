@@ -1,3 +1,6 @@
+; Library of functions for drawing to the video on Logisim
+
+; TODO: the colors are wrong
 #define v_xpos 0xBF
 #define v_ypos 0xDF
 #define v_viddata 0xFF
