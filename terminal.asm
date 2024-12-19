@@ -5,12 +5,16 @@
 
 #include terminal_lib.asm
 
+; Constants for multiplication and division
+; You can modify these values to test different numbers
+; remember to keep them within 8-bit range (0-255)
 #define MUL_A 0x27
 #define MUL_B 0x6
 #define DIV_A 0xFF
 #define DIV_B 0x2F
 
 main:
+; Print "HELLO WORLD!"
 call t_print_h
 call t_print_e
 call t_print_l
@@ -26,6 +30,7 @@ call t_print_exclamation
 
 call t_print_newline
 
+; Multiply and divide two numbers
 lwi $7, MUL_A
 mov $5, $7
 call t_print_reg_num
