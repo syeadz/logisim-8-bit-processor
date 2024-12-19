@@ -6,21 +6,21 @@
 #include math_lib.asm
 
 main:
-; Multiplication
-lwi $5, 5
-lwi $6, 3
-call m_mul8
+    ; Multiplication
+    lwi $5, 5
+    lwi $6, 3
+    call m_mul8
 
-lwi $2, 0x9F
-sw $2, $7
+    lwi $2, 0x9F
+    sw $2, $7
 
-; Division
-lwi $5, 17
-lwi $6, 5
-call m_div8
+    ; Division
+    lwi $5, 17
+    lwi $6, 5
+    call m_div8
 
-lwi $2, 0x3F
-sw $2, $7
-lwi $2, 0x1F
-sw $2, $5
-halt
+    lwi $2, 0x3F
+    sw $2, $7
+    lwi $2, 0x1F
+    sw $2, $5
+    halt
