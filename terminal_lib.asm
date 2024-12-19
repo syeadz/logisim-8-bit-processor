@@ -244,8 +244,8 @@ t_print_9:
 lwi $4, 0x39
 goto t_print
 
-; Print an ascii character stored in register $4 and return
+; Print an ascii character stored in register $5 and return
 t_print:
 lwi $2, T_TERM_ADDR
-sw $2, $4
+sw $2, $5
 ret
