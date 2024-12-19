@@ -130,6 +130,7 @@ def first_pass(lines: list[str]) -> list[str]:
         if line.startswith("#include"):
             file_name = line.split()[1].strip('"')
             lines = handle_include(file_name, lines, lines.index(line_original))
+            ind -= 1
         if (
             not line or line.startswith("#") or line.startswith(";")
         ):  # Skip empty lines or comments
