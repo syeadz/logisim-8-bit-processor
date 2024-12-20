@@ -11,7 +11,7 @@ There are a couple libraries and examples written in assembly that can be run on
 To assemble an assembly file, run the assembler with the assembly file as an argument. This will output a hex file that can be loaded into the ROM in Logisim.
 
 ```bash
-python assembler.py examples/hello.asm
+python assembler.py examples/terminal.asm
 ```
 
 This will generate a file called `hello.hex` that can be loaded into the ROM in Logisim. Simply right-click on the ROM module labeled `Instruction_Memory` and select `Load Image...` and select the hex file. Then you can click on the simulate tab on the top-left and click on enable clock ticks (third circular button from the left) to start the processor. You can modify the clock speed under the `Simulate` tab at the top. The processor will run the program and you can see the output in the terminal or video output. You can reset the processor by clicking on the `Reset_Button` in the top left of the design.
@@ -30,6 +30,7 @@ This will generate a file called `hello.hex` that can be loaded into the ROM in 
 * `examples/terminal.asm` - Writes HELLO WORLD! to the terminal as well as multiplication and division operations (using math_lib.asm). Operands can be changed by modifying the #define at the top of the file.
 * `examples/video.asm` - Writes a pattern to the video output with squares and colors
 * `examples/prime.asm` - Calculates prime numbers up to 231 and writes them to the terminal. This will take forever if you plan on reaching 231.
+* `examples/fib.asm` - Calculates the 13th Fibonacci number and writes it to the 7 segment display.
 
 ## Instruction Set
 
