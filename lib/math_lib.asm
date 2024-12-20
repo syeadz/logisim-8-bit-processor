@@ -12,7 +12,11 @@ m_mul8:
     jpZ m_ret_0
     cmp $0, $6
     jpZ m_ret_0
-; todo: check which number is smaller, use that as counter
+    cmp $5, $6
+    jpnC m_mul8_loop
+    mov $2, $5
+    mov $5, $6
+    mov $6, $2
 m_mul8_loop:
     cmp $0, $6
     jpZ m_ret
