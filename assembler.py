@@ -156,6 +156,7 @@ def first_pass(lines: list[str]) -> list[str]:
         if mnemonic in MACRO_SET:  # Check if the mnemonic is a macro
             if mnemonic == "HALT":  # HALT, write pc
                 expanded_lines.append(f"goto {pc}")
+                pc += 1
                 continue
             macro_expansion = expand_macro(mnemonic, operands)
             for expansion in macro_expansion:
