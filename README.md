@@ -1,10 +1,10 @@
 # 8-bit Processor in Logisim
 
-8-bit single-cycle processor based on the very simple 8-bit processor design from the University of Valladolid which can be seen [here](https://www.deeper.uva.es/pages/spg/docs/Conferences/FPGAworld2006a.pdf), created in logisim and with VHDL and Verilog implementations.
+8-bit single-cycle processor based on the very simple 8-bit processor design from the University of Valladolid which can be seen [here](https://www.deeper.uva.es/pages/spg/docs/Conferences/FPGAworld2006a.pdf), created in logisim and with VHDL and Verilog implementations. You can see it work in real time in Logisim by running the processor with the included assembler and examples.
 
 Some changes were made to simplify the design and instruction set, notably there are no interrupts and port addressing is limited. Other than that, most of the instruction set has been implemented. There is also an assembler written in Python that can convert assembly instructions to hex code that can be loaded into the ROM on Logisim, allowing you to run programs within Logisim and see how the processor works in real time.
 
-There are a couple libraries and examples written in assembly that can be run on the processor.
+There are a couple libraries and examples written in assembly that can be run on the processor. You will need to download Logisim-evolution to view and run the processor. The processor is capable of writing to a terminal, video output, and 7-segment displays. The processor can also perform basic math operations and has a few macro instructions to simplify assembly code.
 
 ![System in Use](screenshots/system_in_use.png)
 
