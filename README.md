@@ -6,6 +6,8 @@ Some changes were made to simplify the design and instruction set, notably there
 
 There are a couple libraries and examples written in assembly that can be run on the processor.
 
+![System in Use](screenshots/system_in_use.png)
+
 ## How to assemble and run
 
 To assemble an assembly file, run the assembler with the assembly file as an argument. This will output a hex file that can be loaded into the ROM in Logisim.
