@@ -14,7 +14,7 @@ loop:
     call check_prime
     inc $7
     cmp $7, $15
-    jpnZ loop
+    jpnZ loop ; loop until $7 = 232
     halt
 
 ; Check if number in $7 is prime, then print it if so
