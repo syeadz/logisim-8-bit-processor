@@ -107,6 +107,8 @@ SYMBOL_TABLE = dict()
 
 LABEL_TABLE = dict()
 
+INCLUDE_TABLE = dict()
+
 instruction_count = 0
 
 
@@ -175,6 +177,10 @@ def handle_include(file_name: str, lines: list[str], line_index: int) -> list[st
     # Resolve the file path to an absolute path
     file_path = Path(file_name).resolve()
 
+    if file_path in INCLUDE_TABLE:
+        raise ValueError(f"Recursive include detected: {file_path}")
+    else:
+        INCLUDE_TABLE[file_path] = True
     try:
         with open(file_path, "r") as f:
             included_lines = f.readlines()
