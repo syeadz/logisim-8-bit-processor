@@ -29,6 +29,7 @@ This will generate a file called `hello.hex` that can be loaded into the ROM in 
 
 * `examples/terminal.asm` - Writes HELLO WORLD! to the terminal as well as multiplication and division operations (using math_lib.asm). Operands can be changed by modifying the #define at the top of the file.
 * `examples/video.asm` - Writes a pattern to the video output with squares and colors
+* `examples/prime.asm` - Calculates prime numbers up to 231 and writes them to the terminal. This will take forever if you plan on reaching 231.
 
 ## Instruction Set
 
@@ -86,6 +87,22 @@ sr1 \<dest\> | Shift right register \<dest\> adding 1
 push \<src\> | Push register \<src\> onto stack
 pop \<dest\> | Pop value from stack into register \<dest\>
 halt | Halt processor
+
+### Assembly Directives
+
+Directive | Description
+----------|-------------
+#include \<file\> | Include file in assembly
+#define \<name\> \<value\> | Define a constant
+
+### Special Registers
+
+Register | Description
+---------|-------------
+$0 | Constant 0
+$1 | Constant 1
+$2 | Temporary register
+$3 | Stack pointer
 
 ## Memory addressing
 
