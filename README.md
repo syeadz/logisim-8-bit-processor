@@ -8,6 +8,11 @@ There are a couple libraries and examples written in assembly that can be run on
 
 ![System in Use](screenshots/system_in_use.png)
 
+## Pre-requisites
+
+* [Logisim-evolution](https://github.com/logisim-evolution/logisim-evolution), version used is v3.8.0
+* Python 3
+
 ## How to assemble and run
 
 To assemble an assembly file, run the assembler with the assembly file as an argument. This will output a hex file that can be loaded into the ROM in Logisim.
@@ -134,3 +139,8 @@ In the Logisim circuit, you have access to 4 BCDs, 1 Terminal, and 1 128 x 128 V
 * Maximum of 1024 instructions
 * Max call depth of 32
 * Max stack size of 31, shared with RAM
+
+## Acknowledgements
+
+* [University of Valladolid](https://www.deeper.uva.es/pages/spg/docs/Conferences/FPGAworld2006a.pdf) for the original design
+* [Logisim-evolution](https://github.com/logisim-evolution/logisim-evolution) for the circuit design
