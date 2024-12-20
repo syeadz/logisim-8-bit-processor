@@ -2,7 +2,7 @@
 ; Only capable of printing single ascii characters
 ; Unable to read data from ROM, so the ascii characters are hardcoded
 
-#include math_lib.asm
+#include lib/math_lib.asm
 
 #define T_TERM_ADDR 0x7F
 

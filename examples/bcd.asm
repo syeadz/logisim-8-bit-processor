@@ -1,7 +1,7 @@
 ; Showcase for the BCD library
 ; Will display 0xFF (255), 0x01 (1), 0x23 (35), 0x45 (69) on the BCD displays
 
-#include bcd_lib.asm
+#include lib/bcd_lib.asm
 
 main:
     lwi $7, 0xFF
