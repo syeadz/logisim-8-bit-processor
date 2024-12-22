@@ -1,12 +1,17 @@
 import re
 
 # Define token types
-# https://learn.microsoft.com/en-us/cpp/c-language/lexical-grammar?view=msvc-170
 TOKENS = [
     ("KEYWORD", r"\b(break|continue|char|if|else|for|return|void)\b"),
-    ("IDENTIFIER", r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"),
-    ("CONSTANT", r"\b0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|\d+\b"),
-    ("PUNCTUATOR", r"[;{}()[\],+\-*/=]"),
+    ("ID", r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"),
+    ("NUMBER", r"\b0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|\d+\b"),
+    ('OP', r'[+\-]'),
+    ('ASSIGN', r'='),
+    ('SEMICOLON', r';'),
+    ('LPAREN', r'\('),
+    ('RPAREN', r'\)'),
+    ('LBRACE', r'\{'),
+    ('RBRACE', r'\}'),
     ("STRING_LITERAL", r'"[^"]*"'),
     ("WHITESPACE", r"\s+"),  # Ignore whitespace
     ("SINGLE_COMMENT", r"//.*"),
@@ -15,6 +20,9 @@ TOKENS = [
 
 
 def tokenize(code):
+    """
+    Tokenize the given C code.
+    """
     tokens = []
     while code:
         for token_type, regex in TOKENS:
