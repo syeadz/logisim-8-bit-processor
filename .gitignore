@@ -1,5 +1,6 @@
-*.hex
+.vscode
+__pycache__
 
-*_backup.circ
+*.hex
 
 test.asm
