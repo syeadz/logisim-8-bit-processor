@@ -13,6 +13,7 @@ TOKENS = [
     ("MULTI_COMMENT", r"/\*.*?\*/"),
 ]
 
+
 def tokenize(code):
     tokens = []
     while code:
@@ -21,11 +22,12 @@ def tokenize(code):
             if match:
                 if token_type not in ["WHITESPACE", "SINGLE_COMMENT", "MULTI_COMMENT"]:
                     tokens.append((token_type, match.group(0)))
-                code = code[match.end():]
+                code = code[match.end() :]
                 break
         else:
             raise SyntaxError(f"Unexpected character: {code[0]}")
     return tokens
+
 
 code = "char a = 5; return a + 0x10;"
 print(tokenize(code))
