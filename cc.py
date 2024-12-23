@@ -2,18 +2,20 @@ import re
 
 # Define token types
 TOKENS = [
-    ("KEYWORD", r"\b(break|continue|char|if|else|for|return|void)\b"),
+    ("KEYWORD", r"\b(break|continue|if|else|for|return)\b"),
+    ("TYPE", r"\b(int|char|void)\b"),
     ("ID", r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"),
     ("NUMBER", r"\b0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|\d+\b"),
-    ('OP', r'[+\-]'),
-    ('ASSIGN', r'='),
-    ('SEMICOLON', r';'),
-    ('LPAREN', r'\('),
-    ('RPAREN', r'\)'),
-    ('LBRACE', r'\{'),
-    ('RBRACE', r'\}'),
+    ("OP", r"[+\-]"),
+    ("ASSIGN", r"="),
+    ("COMMA", r","),
+    ("SEMICOLON", r";"),
+    ("LPAREN", r"\("),
+    ("RPAREN", r"\)"),
+    ("LBRACE", r"\{"),
+    ("RBRACE", r"\}"),
     ("STRING_LITERAL", r'"[^"]*"'),
-    ("WHITESPACE", r"\s+"),  # Ignore whitespace
+    ("WHITESPACE", r"\s+"),
     ("SINGLE_COMMENT", r"//.*"),
     ("MULTI_COMMENT", r"/\*.*?\*/"),
 ]
@@ -37,5 +39,312 @@ def tokenize(code):
     return tokens
 
 
-code = "char a = 5; return a + 0x10;"
-print(tokenize(code))
+class Parser:
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.ast = []
+        self.pos = 0
+
+    def peek(self):
+        """
+        Return the next token without consuming it, or None if there are no more tokens.
+        """
+        return self.tokens[self.pos] if self.pos < len(self.tokens) else None
+
+    def peek_next(self):
+        """
+        Return the token after the next token without consuming it, or None if there are no more tokens.
+        """
+        return self.tokens[self.pos + 1] if self.pos + 1 < len(self.tokens) else None
+
+    def peek_at(self, at):
+        """
+        Return the nth token without consuming it, or None if there are no more tokens.
+        """
+        return self.tokens[self.pos + at] if self.pos + at < len(self.tokens) else None
+
+    def consume(self, token_type, token_value=None):
+        """
+        Consume the next token if it matches the given type and value.
+        """
+        token = self.peek()
+        if (
+            token
+            and token[0] == token_type
+            and (token_value is None or token[1] == token_value)
+        ):
+            self.pos += 1
+            return token
+        else:
+            raise SyntaxError(f"Expected ({token_type}, {token_value}) but got {token}")
+
+    def parse_program(self):
+        """
+        <program> = <function>+
+        """
+        functions = []
+        while self.peek():
+            functions.append(self.parse_function())
+        return functions
+
+    def parse_function(self):
+        """
+        <function> = <type> <identifier> "(" <parameters>? ")" "{" <statement>* "}"
+        """
+        type_ = self.expect("KEYWORD")
+        name = self.expect("ID")
+        self.expect("LPAREN")
+        params = []
+        if self.peek()[1] != ")":
+            params = self.parse_parameters()
+        self.expect("RPAREN")
+        self.expect("LBRACE")
+        body = []
+        while self.lookahead()[1] != "}":
+            body.append(self.parse_statement())
+        self.expect("RBRACE")
+        return {
+            "node": "function",
+            "type": type_,
+            "name": name,
+            "params": params,
+            "body": body,
+        }
+
+    def parse_parameters(self):
+        """
+        <parameters> = <parameter> ("," <parameter>)*
+        """
+        params = [self.parse_parameter()]
+        while self.peek()[1] == ",":
+            self.consume("COMMA")
+            params.append(self.parse_parameter())
+        return {
+            "node": "parameters",
+            "params": params,
+        }
+
+    def parse_parameter(self):
+        """
+        <parameter> = <type> <identifier>
+        """
+        type_ = self.expect("KEYWORD")
+        name = self.expect("ID")
+        return {
+            "node": "parameter",
+            "type": type_,
+            "name": name,
+        }
+
+    def parse_statement(self):
+        """
+        <statement> = <declaration> ";"
+                    | <assignment> ";"
+                    | <function_call> ";"
+                    | <if_statement>
+                    | <for_statement>
+                    | <while_statement>
+                    | <return_statement> ";"
+                    | <block>
+        """
+
+    def parse_declaration(self):
+        """
+        <declaration> = <type> <identifier> ("=" <expression>)?
+        """
+        type_ = self.consume("TYPE")
+        name = self.consume("ID")
+        value = None
+        if self.peek()[1] == "=":
+            self.consume("ASSIGN")
+            value = self.parse_expression()
+        return {
+            "node": "declaration",
+            "type": type_,
+            "name": name,
+            "value": value,
+        }
+    
+    def parse_assignment(self):
+        """
+        <assignment> = <identifier> "=" <expression>
+        """
+        name = self.consume("ID")
+        self.consume("ASSIGN")
+        value = self.parse_expression()
+        return {
+            "node": "assignment",
+            "name": name,
+            "value": value,
+        }
+    
+    def parse_function_call(self):
+        """
+        <function_call> = <identifier> "(" <arguments>? ")"
+        """
+        name = self.consume("ID")[1]
+        self.consume("LPAREN")
+        args = []
+        if self.peek()[1] != ")":
+            args = self.parse_arguments()
+        self.consume("RPAREN")
+        return {
+            "node": "function_call",
+            "name": name,
+            "args": args,
+        }
+    
+    def parse_arguments(self):
+        """
+        <arguments> = <expression> ("," <expression>)*
+        """
+        args = [self.parse_expression()]
+        while self.peek()[1] == ",":
+            self.consume("COMMA")
+            args.append(self.parse_expression())
+        return {
+            "node": "arguments",
+            "args": args,
+        }
+    
+    def parse_return_statement(self):
+        """
+        <return_statement> = "return" <expression>?
+        """
+        self.consume("KEYWORD", "return")
+        value = None
+        if self.peek()[1] != ";":
+            value = self.parse_expression()
+        return {
+            "node": "return_statement",
+            "value": value,
+        }
+    
+    def parse_if_statement(self):
+        """
+        <if_statement> = "if" "(" <expression> ")" <block> ("else" <block>)?
+        """
+        self.consume("KEYWORD", "if")
+        self.consume("LPAREN")
+        condition = self.parse_expression()
+        self.consume("RPAREN")
+        body = self.parse_block()
+        else_body = None
+        if self.peek()[1] == "else":
+            self.consume("KEYWORD", "else")
+            else_body = self.parse_block()
+        return {
+            "node": "if_statement",
+            "condition": condition,
+            "body": body,
+            "else_body": else_body,
+        }
+    
+    def parse_while_statement(self):
+        """
+        <while_statement> = "while" "(" <expression> ")" <block>
+        """
+        self.consume("KEYWORD", "while")
+        self.consume("LPAREN")
+        condition = self.parse_expression()
+        self.consume("RPAREN")
+        body = self.parse_block()
+        return {
+            "node": "while_statement",
+            "condition": condition,
+            "body": body,
+        }
+    
+    def parse_for_statement(self):
+        """
+        <for_statement> = "for" "(" <declaration>? ";" <expression>? ";" <expression>? ")" <block>
+        """
+        self.consume("KEYWORD", "for")
+        self.consume("LPAREN")
+        init = None
+        if self.peek()[1] != ";":
+            init = self.parse_declaration()
+        self.consume("SEMICOLON")
+        condition = None
+        if self.peek()[1] != ";":
+            condition = self.parse_expression()
+        self.consume("SEMICOLON")
+        update = None
+        if self.peek()[1] != ")":
+            update = self.parse_expression()
+        self.consume("RPAREN")
+        body = self.parse_block()
+        return {
+            "node": "for_statement",
+            "init": init,
+            "condition": condition,
+            "update": update,
+            "body": body,
+        }
+    
+    def parse_block(self):
+        """
+        <block> = "{" <statement>* "}"
+        """
+        self.consume("LBRACE")
+        body = []
+        while self.peek()[1] != "}":
+            body.append(self.parse_statement())
+        self.consume("RBRACE")
+        return {
+            "node": "block",
+            "body": body,
+        }
+    
+    def parse_expression(self):
+        """
+        <expression> = <term> (<binary_operator> <term>)*
+        """
+        term = self.parse_term()
+        if self.peek() and self.peek()[0] == "OP":
+            while self.peek() and self.peek()[0] == "OP":
+                op = self.consume("OP")
+                term = {
+                    "node": "binary_operator",
+                    "op": op,
+                    "left": term,
+                    "right": self.parse_term(),
+                }
+            return {
+                "node": "expression",
+                "value": term,
+            }
+        else:
+            return term
+    
+    def parse_term(self):
+        """
+        <term> = <identifier> | <number> | <function_call> | "(" <expression> ")"
+        """
+        if self.peek()[0] == "ID":
+            if self.peek_next() and self.peek_next()[1] == "(":
+                return self.parse_function_call()
+            else:
+                return {
+                    "node": "identifier",
+                    "value": self.consume("ID")[1],
+                }
+        elif self.peek()[0] == "NUMBER":
+            return {
+                "node": "number",
+                "value": self.consume("NUMBER")[1],
+            }
+        elif self.peek()[1] == "(":
+            self.consume("LPAREN")
+            expr = self.parse_expression()
+            self.consume("RPAREN")
+            return {
+                "node": "parentheses",
+                "value": expr,
+            }
+
+    def parse(self):
+        """
+        Parse the tokens and return the AST.
+        """
+        self.ast = self.parse_program()
