@@ -366,3 +366,38 @@ class Parser:
         Parse the tokens and return the AST.
         """
         self.ast = self.parse_program()
+
+    def pretty_print(self):
+        """
+        Pretty print the AST.
+        """
+        def _pretty_print(node, indent=0):
+            if isinstance(node, list):
+                for item in node:
+                    _pretty_print(item, indent)
+            elif isinstance(node, dict):
+                for key, value in node.items():
+                    if key == "node":
+                        print("  " * indent + value)
+                    else:
+                        print("  " * indent + f"{key}:")
+                        _pretty_print(value, indent + 2)
+            else:
+                print("  " * indent + str(node))
+
+        _pretty_print(self.ast)
+
+
+if __name__ == "__main__":
+    code = """
+    int main() {
+        int a = 10;
+        int b = 20;
+        int c = a + b;
+        return c;
+    }
+    """
+    tokens = tokenize(code)
+    parser = Parser(tokens)
+    parser.parse()
+    parser.pretty_print()
