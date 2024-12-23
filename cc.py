@@ -115,18 +115,22 @@ class Parser:
         <parameters> = <type> <identifier> ("," <type> <identifier)*
         """
         params = []
-        params.append({
-            "node": "parameter",
-            "type": self.consume("TYPE")[1],
-            "name": self.consume("ID")[1],
-        })
-        while self.peek() and self.peek()[1] == ",":
-            self.consume("COMMA")
-            params.append({
+        params.append(
+            {
                 "node": "parameter",
                 "type": self.consume("TYPE")[1],
                 "name": self.consume("ID")[1],
-            })
+            }
+        )
+        while self.peek() and self.peek()[1] == ",":
+            self.consume("COMMA")
+            params.append(
+                {
+                    "node": "parameter",
+                    "type": self.consume("TYPE")[1],
+                    "name": self.consume("ID")[1],
+                }
+            )
         return params
 
     def parse_statement(self):
@@ -141,7 +145,7 @@ class Parser:
                     | <block>
         """
         if self.peek()[0] == "TYPE":
-            val =  self.parse_declaration()
+            val = self.parse_declaration()
             self.consume("SEMICOLON")
             return val
         elif self.peek()[0] == "ID" and self.peek_next()[1] == "=":
@@ -183,7 +187,7 @@ class Parser:
             "name": name,
             "value": value,
         }
-    
+
     def parse_assignment(self):
         """
         <assignment> = <identifier> "=" <expression>
@@ -199,7 +203,7 @@ class Parser:
             },
             "right": value,
         }
-    
+
     def parse_function_call(self):
         """
         <function_call> = <identifier> "(" <arguments>? ")"
@@ -215,7 +219,7 @@ class Parser:
             "name": name,
             "args": args,
         }
-    
+
     def parse_arguments(self):
         """
         <arguments> = <expression> ("," <expression>)*
@@ -227,7 +231,7 @@ class Parser:
             self.consume("COMMA")
             args.append(self.parse_expression())
         return args
-    
+
     def parse_return_statement(self):
         """
         <return_statement> = "return" <expression>?
@@ -240,7 +244,7 @@ class Parser:
             "node": "return_statement",
             "value": value,
         }
-    
+
     def parse_if_statement(self):
         """
         <if_statement> = "if" "(" <expression> ")" <block> ("else" <block>)?
@@ -260,7 +264,7 @@ class Parser:
             "body": body,
             "else_body": else_body,
         }
-    
+
     def parse_while_statement(self):
         """
         <while_statement> = "while" "(" <expression> ")" <block>
@@ -275,7 +279,7 @@ class Parser:
             "condition": condition,
             "body": body,
         }
-    
+
     def parse_for_statement(self):
         """
         <for_statement> = "for" "(" <declaration>? ";" <expression>? ";" <expression>? ")" <block>
@@ -284,7 +288,7 @@ class Parser:
         self.consume("LPAREN")
         init = None
         if self.peek()[1] != ";":
-            if self.peek()[0] == "TYPE":    
+            if self.peek()[0] == "TYPE":
                 init = self.parse_declaration()
             else:
                 init = self.parse_assignment()
@@ -297,7 +301,7 @@ class Parser:
         if self.peek()[1] != ")":
             if self.peek_next()[0] == "ASSIGN":
                 update = self.parse_assignment()
-            else: # this is not implemented yet, like i++
+            else:  # this is not implemented yet, like i++
                 update = self.parse_expression()
         self.consume("RPAREN")
         body = self.parse_block()
@@ -308,7 +312,7 @@ class Parser:
             "update": update,
             "body": body,
         }
-    
+
     def parse_block(self):
         """
         <block> = "{" <statement>* "}"
@@ -319,7 +323,7 @@ class Parser:
             body.append(self.parse_statement())
         self.consume("RBRACE")
         return body
-    
+
     def parse_expression(self):
         """
         <expression> = <term> (<binary_operator> <term>)*
@@ -334,7 +338,7 @@ class Parser:
                 "right": self.parse_term(),
             }
         return term
-    
+
     def parse_term(self):
         """
         <term> = <identifier> | <number> | <function_call> | "(" <expression> ")"
@@ -371,6 +375,7 @@ class Parser:
         """
         Pretty print the AST.
         """
+
         def _pretty_print(node, indent=0):
             if isinstance(node, list):
                 for item in node:
