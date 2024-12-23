@@ -187,13 +187,16 @@ class Parser:
         """
         <assignment> = <identifier> "=" <expression>
         """
-        name = self.consume("ID")
+        name = self.consume("ID")[1]
         self.consume("ASSIGN")
         value = self.parse_expression()
         return {
             "node": "assignment",
-            "name": name,
-            "value": value,
+            "left": {
+                "node": "identifier",
+                "value": name,
+            },
+            "right": value,
         }
     
     def parse_function_call(self):

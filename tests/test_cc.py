@@ -398,3 +398,48 @@ class TestCC(unittest.TestCase):
             ],
         }
         self.assertEqual(node, expected)
+
+    # parse_assignment tests
+
+    def test_parse_assignment(self):
+        code = "a = 5"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_assignment()
+        expected = {
+            "node": "assignment",
+            "left": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "right": {
+                "node": "number",
+                "value": "5",
+            },
+        }
+
+    def test_parse_assignment_expression(self):
+        code = "a = a + 2"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_assignment()
+        expected = {
+            "node": "assignment",
+            "left": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "right": {
+                "node": "binary_operator",
+                "op": "+",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+        }
+        self.assertEqual(node, expected)
