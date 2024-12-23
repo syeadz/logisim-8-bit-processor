@@ -1258,3 +1258,185 @@ class TestCC(unittest.TestCase):
             ],
         }
         self.assertEqual(node, expected)
+
+    # parse_program tests
+
+    def test_parse_program_single_function(self):
+        code = "char main() { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_program()
+        expected = [
+            {
+                "node": "function",
+                "type": "char",
+                "name": "main",
+                "params": [],
+                "body": [],
+            }
+        ]
+        self.assertEqual(node, expected)
+
+    def test_parse_program_multiple_functions(self):
+        code = """
+        char main() { }
+        int foo() { }
+        """
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_program()
+        expected = [
+            {
+                "node": "function",
+                "type": "char",
+                "name": "main",
+                "params": [],
+                "body": [],
+            },
+            {
+                "node": "function",
+                "type": "int",
+                "name": "foo",
+                "params": [],
+                "body": [],
+            }
+        ]
+        self.assertEqual(node, expected)
+
+    def test_parse_program_complex(self):
+        code = """
+        char main() {
+            char a = 5;
+            char b;
+            char b = a + 2;
+            my_function();
+            if (a) { }
+            while (b) { }
+            for (a = 0; a < 5; a = a + 1) { }
+            {}
+            return a;
+        }
+        """
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_program()
+        expected = [
+            {
+                "node": "function",
+                "type": "char",
+                "name": "main",
+                "params": [],
+                "body": [
+                    {
+                        "node": "declaration",
+                        "type": "char",
+                        "name": "a",
+                        "value": {
+                            "node": "number",
+                            "value": "5",
+                        },
+                    },
+                    {
+                        "node": "declaration",
+                        "type": "char",
+                        "name": "b",
+                        "value": None,
+                    },
+                    {
+                        "node": "declaration",
+                        "type": "char",
+                        "name": "b",
+                        "value": {
+                            "node": "binary_operator",
+                            "op": "+",
+                            "left": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                            "right": {
+                                "node": "number",
+                                "value": "2",
+                            },
+                        },
+                    },
+                    {
+                        "node": "function_call",
+                        "name": "my_function",
+                        "args": [],
+                    },
+                    {
+                        "node": "if_statement",
+                        "condition": {
+                            "node": "identifier",
+                            "value": "a",
+                        },
+                        "body": [],
+                        "else_body": None,
+                    },
+                    {
+                        "node": "while_statement",
+                        "condition": {
+                            "node": "identifier",
+                            "value": "b",
+                        },
+                        "body": [],
+                    },
+                    {
+                        "node": "for_statement",
+                        "init": {
+                            "node": "assignment",
+                            "left": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                            "right": {
+                                "node": "number",
+                                "value": "0",
+                            },
+                        },
+                        "condition": {
+                            "node": "binary_operator",
+                            "op": "<",
+                            "left": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                            "right": {
+                                "node": "number",
+                                "value": "5",
+                            },
+                        },
+                        "update": {
+                            "node": "assignment",
+                            "left": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                            "right": {
+                                "node": "binary_operator",
+                                "op": "+",
+                                "left": {
+                                    "node": "identifier",
+                                    "value": "a",
+                                },
+                                "right": {
+                                    "node": "number",
+                                    "value": "1",
+                                },
+                            },
+                        },
+                        "body": [],
+                    },
+                    [],
+                    {
+                        "node": "return_statement",
+                        "value": {
+                            "node": "identifier",
+                            "value": "a",
+                        },
+                    },
+                ],
+            }
+        ]
+        self.assertEqual(node, expected)
+        
