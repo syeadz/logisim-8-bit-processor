@@ -243,10 +243,7 @@ class TestCC(unittest.TestCase):
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_block()
-        expected = {
-            "node": "block",
-            "body": [],
-        }
+        expected = []
         self.assertEqual(node, expected)
 
     # parse_return_statement tests
@@ -268,7 +265,7 @@ class TestCC(unittest.TestCase):
     # parse_arguments tests
 
     def test_parse_arguments_empty(self):
-        code = "()"
+        code = ""
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_arguments()
@@ -497,4 +494,171 @@ class TestCC(unittest.TestCase):
                 },
             },
         }
+        self.assertEqual(node, expected)
+
+    # parse_statement tests
+
+    def test_parse_statement_declaration(self):
+        code = "char a;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "declaration",
+            "type": "char",
+            "name": "a",
+            "value": None,
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_assignment(self):
+        code = "a = 5;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "assignment",
+            "left": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "right": {
+                "node": "number",
+                "value": "5",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_function_call(self):
+        code = "foo();"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "function_call",
+            "name": "foo",
+            "args": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_if_statemenet(self):
+        code = "if (a) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+            "else_body": None,
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_if_else_statemenet(self):
+        code = "if (a) { } else { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+            "else_body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_for_statement(self):
+        code = "for (a = 0; a < 5; a = a + 1) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "for_statement",
+            "init": {
+                "node": "assignment",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "0",
+                },
+            },
+            "condition": {
+                "node": "binary_operator",
+                "op": "<",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "5",
+                },
+            },
+            "update": {
+                "node": "assignment",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "binary_operator",
+                    "op": "+",
+                    "left": {
+                        "node": "identifier",
+                        "value": "a",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "1",
+                    },
+                },
+            },
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_while_statement(self):
+        code = "while (a) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "while_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_return_statement(self):
+        code = "return a;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = {
+            "node": "return_statement",
+            "value": {
+                "node": "identifier",
+                "value": "a",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_statement_block(self):
+        code = "{ }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_statement()
+        expected = []
         self.assertEqual(node, expected)

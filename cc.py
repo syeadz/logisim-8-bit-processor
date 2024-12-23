@@ -2,11 +2,11 @@ import re
 
 # Define token types
 TOKENS = [
-    ("KEYWORD", r"\b(break|continue|if|else|for|return)\b"),
+    ("KEYWORD", r"\b(break|continue|if|else|for|while|return)\b"),
     ("TYPE", r"\b(int|char|void)\b"),
     ("ID", r"\b[a-zA-Z_][a-zA-Z0-9_]*\b"),
     ("NUMBER", r"\b0[bB][01]+|0[oO][0-7]+|0[xX][0-9a-fA-F]+|\d+\b"),
-    ("OP", r"[+\-]"),
+    ("OP", r"[+\-<>]|==|!="),
     ("ASSIGN", r"="),
     ("COMMA", r","),
     ("SEMICOLON", r";"),
@@ -148,19 +148,27 @@ class Parser:
                     | <block>
         """
         if self.peek()[0] == "TYPE":
-            return self.parse_declaration()
+            val =  self.parse_declaration()
+            self.consume("SEMICOLON")
+            return val
         elif self.peek()[0] == "ID" and self.peek_next()[1] == "=":
-            return self.parse_assignment()
-        elif self.peek()[0] == "ID" and self.peek_next()[1] == "(":
-            return self.parse_function_call()
-        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "return":
-            return self.parse_return_statement()
+            val = self.parse_assignment()
+            self.consume("SEMICOLON")
+            return val
         elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "if":
             return self.parse_if_statement()
         elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "while":
             return self.parse_while_statement()
         elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "for":
             return self.parse_for_statement()
+        elif self.peek()[0] == "ID" and self.peek_next()[1] == "(":
+            val = self.parse_function_call()
+            self.consume("SEMICOLON")
+            return val
+        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "return":
+            val = self.parse_return_statement()
+            self.consume("SEMICOLON")
+            return val
         elif self.peek()[0] == "LBRACE":
             return self.parse_block()
         else:
@@ -219,6 +227,8 @@ class Parser:
         """
         <arguments> = <expression> ("," <expression>)*
         """
+        if not self.peek():
+            return []
         args = [self.parse_expression()]
         while self.peek() and self.peek()[0] == "COMMA":
             self.consume("COMMA")
@@ -248,7 +258,7 @@ class Parser:
         self.consume("RPAREN")
         body = self.parse_block()
         else_body = None
-        if self.peek()[1] == "else":
+        if self.peek() and self.peek()[1] == "else":
             self.consume("KEYWORD", "else")
             else_body = self.parse_block()
         return {
@@ -281,7 +291,10 @@ class Parser:
         self.consume("LPAREN")
         init = None
         if self.peek()[1] != ";":
-            init = self.parse_declaration()
+            if self.peek()[0] == "TYPE":    
+                init = self.parse_declaration()
+            else:
+                init = self.parse_assignment()
         self.consume("SEMICOLON")
         condition = None
         if self.peek()[1] != ";":
@@ -289,7 +302,10 @@ class Parser:
         self.consume("SEMICOLON")
         update = None
         if self.peek()[1] != ")":
-            update = self.parse_expression()
+            if self.peek_next()[0] == "ASSIGN":
+                update = self.parse_assignment()
+            else: # this is not implemented yet, like i++
+                update = self.parse_expression()
         self.consume("RPAREN")
         body = self.parse_block()
         return {
@@ -309,10 +325,7 @@ class Parser:
         while self.peek()[1] != "}":
             body.append(self.parse_statement())
         self.consume("RBRACE")
-        return {
-            "node": "block",
-            "body": body,
-        }
+        return body
     
     def parse_expression(self):
         """
