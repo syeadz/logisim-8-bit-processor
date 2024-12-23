@@ -567,6 +567,73 @@ class TestCC(unittest.TestCase):
         }
         self.assertEqual(node, expected)
 
+    # parse_while_statement tests
+
+    def test_parse_while_statement(self):
+        code = "while (a) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_while_statement()
+        expected = {
+            "node": "while_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_while_statement_expr(self):
+        code = "while (a < 2) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_while_statement()
+        expected = {
+            "node": "while_statement",
+            "condition": {
+                "node": "binary_operator",
+                "op": "<",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_while_statement_body(self):
+        code = "while (a) { a = 5; }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_while_statement()
+        expected = {
+            "node": "while_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [
+                {
+                    "node": "assignment",
+                    "left": {
+                        "node": "identifier",
+                        "value": "a",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "5",
+                    },
+                }
+            ],
+        }
+        self.assertEqual(node, expected)
+
     # parse_return_statement tests
 
     def test_parse_return_statement(self):
