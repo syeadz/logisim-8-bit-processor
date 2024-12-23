@@ -27,7 +27,7 @@ class TestAssembleInstruction(unittest.TestCase):
     def test_sw(self):
         mnemonic = "SW"
         operands = ["$1", "$2"]
-        expected = pf + "00110000010010"
+        expected = pf + "00110000100001"
         self.assertEqual(assemble_instruction(mnemonic, operands), expected)
 
     def test_jpz(self):
