@@ -85,7 +85,10 @@ class Parser:
         functions = []
         while self.peek():
             functions.append(self.parse_function())
-        return functions
+        return {
+            "node": "program",
+            "functions": functions,
+        }
 
     def parse_function(self):
         """

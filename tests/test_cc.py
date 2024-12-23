@@ -1266,15 +1266,19 @@ class TestCC(unittest.TestCase):
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_program()
-        expected = [
-            {
-                "node": "function",
-                "type": "char",
-                "name": "main",
-                "params": [],
-                "body": [],
-            }
-        ]
+        expected = {
+            "node": "program",
+            "functions": [
+                {
+                    "node": "function",
+                    "type": "char",
+                    "name": "main",
+                    "params": [],
+                    "body": [],
+                }
+            ],
+        }
+
         self.assertEqual(node, expected)
 
     def test_parse_program_multiple_functions(self):
@@ -1285,22 +1289,25 @@ class TestCC(unittest.TestCase):
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_program()
-        expected = [
-            {
-                "node": "function",
-                "type": "char",
-                "name": "main",
-                "params": [],
-                "body": [],
-            },
-            {
-                "node": "function",
-                "type": "int",
-                "name": "foo",
-                "params": [],
-                "body": [],
-            }
-        ]
+        expected = {
+            "node": "program",
+            "functions": [
+                {
+                    "node": "function",
+                    "type": "char",
+                    "name": "main",
+                    "params": [],
+                    "body": [],
+                },
+                {
+                    "node": "function",
+                    "type": "int",
+                    "name": "foo",
+                    "params": [],
+                    "body": [],
+                },
+            ],
+        }
         self.assertEqual(node, expected)
 
     def test_parse_program_complex(self):
@@ -1320,99 +1327,35 @@ class TestCC(unittest.TestCase):
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_program()
-        expected = [
-            {
-                "node": "function",
-                "type": "char",
-                "name": "main",
-                "params": [],
-                "body": [
-                    {
-                        "node": "declaration",
-                        "type": "char",
-                        "name": "a",
-                        "value": {
-                            "node": "number",
-                            "value": "5",
-                        },
-                    },
-                    {
-                        "node": "declaration",
-                        "type": "char",
-                        "name": "b",
-                        "value": None,
-                    },
-                    {
-                        "node": "declaration",
-                        "type": "char",
-                        "name": "b",
-                        "value": {
-                            "node": "binary_operator",
-                            "op": "+",
-                            "left": {
-                                "node": "identifier",
-                                "value": "a",
-                            },
-                            "right": {
-                                "node": "number",
-                                "value": "2",
-                            },
-                        },
-                    },
-                    {
-                        "node": "function_call",
-                        "name": "my_function",
-                        "args": [],
-                    },
-                    {
-                        "node": "if_statement",
-                        "condition": {
-                            "node": "identifier",
-                            "value": "a",
-                        },
-                        "body": [],
-                        "else_body": None,
-                    },
-                    {
-                        "node": "while_statement",
-                        "condition": {
-                            "node": "identifier",
-                            "value": "b",
-                        },
-                        "body": [],
-                    },
-                    {
-                        "node": "for_statement",
-                        "init": {
-                            "node": "assignment",
-                            "left": {
-                                "node": "identifier",
-                                "value": "a",
-                            },
-                            "right": {
-                                "node": "number",
-                                "value": "0",
-                            },
-                        },
-                        "condition": {
-                            "node": "binary_operator",
-                            "op": "<",
-                            "left": {
-                                "node": "identifier",
-                                "value": "a",
-                            },
-                            "right": {
+        expected = {
+            "node": "program",
+            "functions": [
+                {
+                    "node": "function",
+                    "type": "char",
+                    "name": "main",
+                    "params": [],
+                    "body": [
+                        {
+                            "node": "declaration",
+                            "type": "char",
+                            "name": "a",
+                            "value": {
                                 "node": "number",
                                 "value": "5",
                             },
                         },
-                        "update": {
-                            "node": "assignment",
-                            "left": {
-                                "node": "identifier",
-                                "value": "a",
-                            },
-                            "right": {
+                        {
+                            "node": "declaration",
+                            "type": "char",
+                            "name": "b",
+                            "value": None,
+                        },
+                        {
+                            "node": "declaration",
+                            "type": "char",
+                            "name": "b",
+                            "value": {
                                 "node": "binary_operator",
                                 "op": "+",
                                 "left": {
@@ -1421,22 +1364,88 @@ class TestCC(unittest.TestCase):
                                 },
                                 "right": {
                                     "node": "number",
-                                    "value": "1",
+                                    "value": "2",
                                 },
                             },
                         },
-                        "body": [],
-                    },
-                    [],
-                    {
-                        "node": "return_statement",
-                        "value": {
-                            "node": "identifier",
-                            "value": "a",
+                        {
+                            "node": "function_call",
+                            "name": "my_function",
+                            "args": [],
                         },
-                    },
-                ],
-            }
-        ]
+                        {
+                            "node": "if_statement",
+                            "condition": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                            "body": [],
+                            "else_body": None,
+                        },
+                        {
+                            "node": "while_statement",
+                            "condition": {
+                                "node": "identifier",
+                                "value": "b",
+                            },
+                            "body": [],
+                        },
+                        {
+                            "node": "for_statement",
+                            "init": {
+                                "node": "assignment",
+                                "left": {
+                                    "node": "identifier",
+                                    "value": "a",
+                                },
+                                "right": {
+                                    "node": "number",
+                                    "value": "0",
+                                },
+                            },
+                            "condition": {
+                                "node": "binary_operator",
+                                "op": "<",
+                                "left": {
+                                    "node": "identifier",
+                                    "value": "a",
+                                },
+                                "right": {
+                                    "node": "number",
+                                    "value": "5",
+                                },
+                            },
+                            "update": {
+                                "node": "assignment",
+                                "left": {
+                                    "node": "identifier",
+                                    "value": "a",
+                                },
+                                "right": {
+                                    "node": "binary_operator",
+                                    "op": "+",
+                                    "left": {
+                                        "node": "identifier",
+                                        "value": "a",
+                                    },
+                                    "right": {
+                                        "node": "number",
+                                        "value": "1",
+                                    },
+                                },
+                            },
+                            "body": [],
+                        },
+                        [],
+                        {
+                            "node": "return_statement",
+                            "value": {
+                                "node": "identifier",
+                                "value": "a",
+                            },
+                        },
+                    ],
+                }
+            ],
+        }
         self.assertEqual(node, expected)
-        
