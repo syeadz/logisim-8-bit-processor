@@ -918,7 +918,7 @@ class TestCC(unittest.TestCase):
     # parse_declaration tests
 
     def test_parse_declaration_no_assign(self):
-        code = "char a;"
+        code = "char a"
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_declaration()
@@ -931,7 +931,7 @@ class TestCC(unittest.TestCase):
         self.assertEqual(node, expected)
 
     def test_parse_declaration_assign_num(self):
-        code = "char a = 5;"
+        code = "char a = 5"
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_declaration()
@@ -947,7 +947,7 @@ class TestCC(unittest.TestCase):
         self.assertEqual(node, expected)
 
     def test_parse_declaration_assign_expr(self):
-        code = "char b = a + 2;"
+        code = "char b = a + 2"
         tokens = tokenize(code)
         parser = Parser(tokens)
         node = parser.parse_declaration()

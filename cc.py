@@ -181,7 +181,7 @@ class Parser:
         type_ = self.consume("TYPE")[1]
         name = self.consume("ID")[1]
         value = None
-        if self.peek()[1] == "=":
+        if self.peek() and self.peek()[1] == "=":
             self.consume("ASSIGN")
             value = self.parse_expression()
         return {
