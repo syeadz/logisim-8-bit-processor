@@ -2,7 +2,7 @@ import unittest
 from cc import tokenize, Parser
 
 
-class TestCC(unittest.TestCase):
+class TestCCParser(unittest.TestCase):
     def test_tokenize(self):
         code = """
         char main() {
