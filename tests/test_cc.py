@@ -301,7 +301,7 @@ class TestCC(unittest.TestCase):
             {
                 "node": "number",
                 "value": "2",
-            }
+            },
         ]
         self.assertEqual(node, expected)
 
@@ -430,6 +430,61 @@ class TestCC(unittest.TestCase):
                 "value": "a",
             },
             "right": {
+                "node": "binary_operator",
+                "op": "+",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+        }
+        self.assertEqual(node, expected)
+
+    # parse_declaration tests
+
+    def test_parse_declaration_no_assign(self):
+        code = "char a;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_declaration()
+        expected = {
+            "node": "declaration",
+            "type": "char",
+            "name": "a",
+            "value": None,
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_declaration_assign_num(self):
+        code = "char a = 5;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_declaration()
+        expected = {
+            "node": "declaration",
+            "type": "char",
+            "name": "a",
+            "value": {
+                "node": "number",
+                "value": "5",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_declaration_assign_expr(self):
+        code = "char b = a + 2;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_declaration()
+        expected = {
+            "node": "declaration",
+            "type": "char",
+            "name": "b",
+            "value": {
                 "node": "binary_operator",
                 "op": "+",
                 "left": {

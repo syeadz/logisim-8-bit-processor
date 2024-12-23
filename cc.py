@@ -170,8 +170,8 @@ class Parser:
         """
         <declaration> = <type> <identifier> ("=" <expression>)?
         """
-        type_ = self.consume("TYPE")
-        name = self.consume("ID")
+        type_ = self.consume("TYPE")[1]
+        name = self.consume("ID")[1]
         value = None
         if self.peek()[1] == "=":
             self.consume("ASSIGN")
