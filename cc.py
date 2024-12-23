@@ -91,18 +91,14 @@ class Parser:
         """
         <function> = <type> <identifier> "(" <parameters>? ")" "{" <statement>* "}"
         """
-        type_ = self.expect("KEYWORD")
-        name = self.expect("ID")
-        self.expect("LPAREN")
+        type_ = self.consume("TYPE")[1]
+        name = self.consume("ID")[1]
+        self.consume("LPAREN")
         params = []
         if self.peek()[1] != ")":
             params = self.parse_parameters()
-        self.expect("RPAREN")
-        self.expect("LBRACE")
-        body = []
-        while self.lookahead()[1] != "}":
-            body.append(self.parse_statement())
-        self.expect("RBRACE")
+        self.consume("RPAREN")
+        body = self.parse_block()
         return {
             "node": "function",
             "type": type_,

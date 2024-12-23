@@ -1171,3 +1171,90 @@ class TestCC(unittest.TestCase):
             },
         ]
         self.assertEqual(node, expected)
+
+    # parse_function tests
+
+    def test_parse_function_no_args(self):
+        code = "char main() { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function()
+        expected = {
+            "node": "function",
+            "type": "char",
+            "name": "main",
+            "params": [],
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_function_single_arg(self):
+        code = "char main(int a) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function()
+        expected = {
+            "node": "function",
+            "type": "char",
+            "name": "main",
+            "params": [
+                {
+                    "node": "parameter",
+                    "type": "int",
+                    "name": "a",
+                }
+            ],
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_function_multiple_args(self):
+        code = "char main(int a, char b) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function()
+        expected = {
+            "node": "function",
+            "type": "char",
+            "name": "main",
+            "params": [
+                {
+                    "node": "parameter",
+                    "type": "int",
+                    "name": "a",
+                },
+                {
+                    "node": "parameter",
+                    "type": "char",
+                    "name": "b",
+                },
+            ],
+            "body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_function_body(self):
+        code = "char main() { a = 5; }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function()
+        expected = {
+            "node": "function",
+            "type": "char",
+            "name": "main",
+            "params": [],
+            "body": [
+                {
+                    "node": "assignment",
+                    "left": {
+                        "node": "identifier",
+                        "value": "a",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "5",
+                    },
+                }
+            ],
+        }
+        self.assertEqual(node, expected)
