@@ -80,3 +80,158 @@ class TestCC(unittest.TestCase):
             },
         }
         self.assertEqual(node, expected)
+
+    # parse_expression tests
+
+    def test_parse_expression_single_term(self):
+        code = "a"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "identifier",
+            "value": "a",
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_expression_plus_2_terms(self):
+        code = "a + 2"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "binary_operator",
+            "op": "+",
+            "left": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "right": {
+                "node": "number",
+                "value": "2",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_expression_minus_2_terms(self):
+        code = "a - 2"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "binary_operator",
+            "op": "-",
+            "left": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "right": {
+                "node": "number",
+                "value": "2",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_expression_plus_3_terms(self):
+        code = "a + 2 + c"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "binary_operator",
+            "op": "+",
+            "left": {
+                "node": "binary_operator",
+                "op": "+",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+            "right": {
+                "node": "identifier",
+                "value": "c",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_expression_minus_3_terms(self):
+        code = "a - 2 - c"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "binary_operator",
+            "op": "-",
+            "left": {
+                "node": "binary_operator",
+                "op": "-",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+            "right": {
+                "node": "identifier",
+                "value": "c",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_expression_complex(self):
+        code = "a + (2 - 1) + (main() + b)"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_expression()
+        expected = {
+            "node": "binary_operator",
+            "op": "+",
+            "left": {
+                "node": "binary_operator",
+                "op": "+",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "parentheses",
+                    "value": {
+                        "node": "binary_operator",
+                        "op": "-",
+                        "left": {
+                            "node": "number",
+                            "value": "2",
+                        },
+                        "right": {
+                            "node": "number",
+                            "value": "1",
+                        },
+                    },
+                },
+            },
+            "right": {
+                "node": "parentheses",
+                "value": {
+                    "node": "binary_operator",
+                    "op": "+",
+                    "left": {
+                        "node": "function_call",
+                        "name": "main",
+                        "args": [],
+                    },
+                    "right": {
+                        "node": "identifier",
+                        "value": "b",
+                    },
+                },
+            },
+        }
+        self.assertEqual(node, expected)

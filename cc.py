@@ -301,21 +301,15 @@ class Parser:
         <expression> = <term> (<binary_operator> <term>)*
         """
         term = self.parse_term()
-        if self.peek() and self.peek()[0] == "OP":
-            while self.peek() and self.peek()[0] == "OP":
-                op = self.consume("OP")
-                term = {
-                    "node": "binary_operator",
-                    "op": op,
-                    "left": term,
-                    "right": self.parse_term(),
-                }
-            return {
-                "node": "expression",
-                "value": term,
+        while self.peek() and self.peek()[0] == "OP":
+            op = self.consume("OP")[1]
+            term = {
+                "node": "binary_operator",
+                "op": op,
+                "left": term,
+                "right": self.parse_term(),
             }
-        else:
-            return term
+        return term
     
     def parse_term(self):
         """
