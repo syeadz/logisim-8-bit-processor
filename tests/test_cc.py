@@ -634,6 +634,92 @@ class TestCC(unittest.TestCase):
         }
         self.assertEqual(node, expected)
 
+    # parse_if_statement tests
+
+    def test_parse_if_statement(self):
+        code = "if (a) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_if_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+            "else_body": None,
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_if_statement_else(self):
+        code = "if (a) { } else { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_if_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [],
+            "else_body": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_if_statement_expr(self):
+        code = "if (a < 2) { }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_if_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "binary_operator",
+                "op": "<",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "2",
+                },
+            },
+            "body": [],
+            "else_body": None,
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_if_statement_body(self):
+        code = "if (a) { a = 5; }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_if_statement()
+        expected = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [
+                {
+                    "node": "assignment",
+                    "left": {
+                        "node": "identifier",
+                        "value": "a",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "5",
+                    },
+                }
+            ],
+            "else_body": None,
+        }
+        self.assertEqual(node, expected)
+
     # parse_return_statement tests
 
     def test_parse_return_statement(self):
