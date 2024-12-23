@@ -334,3 +334,67 @@ class TestCC(unittest.TestCase):
             },
         ]
         self.assertEqual(node, expected)
+
+    # parse_function_call tests
+
+    def test_parse_function_call_no_args(self):
+        code = "my_function()"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function_call()
+        expected = {
+            "node": "function_call",
+            "name": "my_function",
+            "args": [],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_function_call_single_arg(self):
+        code = "my_function(a)"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function_call()
+        expected = {
+            "node": "function_call",
+            "name": "my_function",
+            "args": [
+                {
+                    "node": "identifier",
+                    "value": "a",
+                }
+            ],
+        }
+        self.assertEqual(node, expected)
+
+    def test_parse_function_call_multiple_args(self):
+        code = "my_function(a, 2, b + 1)"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_function_call()
+        expected = {
+            "node": "function_call",
+            "name": "my_function",
+            "args": [
+                {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                {
+                    "node": "number",
+                    "value": "2",
+                },
+                {
+                    "node": "binary_operator",
+                    "op": "+",
+                    "left": {
+                        "node": "identifier",
+                        "value": "b",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "1",
+                    },
+                },
+            ],
+        }
+        self.assertEqual(node, expected)
