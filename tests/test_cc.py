@@ -248,3 +248,89 @@ class TestCC(unittest.TestCase):
             "body": [],
         }
         self.assertEqual(node, expected)
+
+    # parse_return_statement tests
+
+    def test_parse_return_statement(self):
+        code = "return a;"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_return_statement()
+        expected = {
+            "node": "return_statement",
+            "value": {
+                "node": "identifier",
+                "value": "a",
+            },
+        }
+        self.assertEqual(node, expected)
+
+    # parse_arguments tests
+
+    def test_parse_arguments_empty(self):
+        code = "()"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_arguments()
+        expected = []
+        self.assertEqual(node, expected)
+
+    def test_parse_arguments_single(self):
+        code = "a"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_arguments()
+        expected = [
+            {
+                "node": "identifier",
+                "value": "a",
+            }
+        ]
+        self.assertEqual(node, expected)
+
+    def test_parse_arguments_double(self):
+        code = "a, 2"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_arguments()
+        expected = [
+            {
+                "node": "identifier",
+                "value": "a",
+            },
+            {
+                "node": "number",
+                "value": "2",
+            }
+        ]
+        self.assertEqual(node, expected)
+
+    def test_parse_arguments_multiple(self):
+        code = "a, 2 + 1, my_function()"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_arguments()
+        expected = [
+            {
+                "node": "identifier",
+                "value": "a",
+            },
+            {
+                "node": "binary_operator",
+                "op": "+",
+                "left": {
+                    "node": "number",
+                    "value": "2",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "1",
+                },
+            },
+            {
+                "node": "function_call",
+                "name": "my_function",
+                "args": [],
+            },
+        ]
+        self.assertEqual(node, expected)

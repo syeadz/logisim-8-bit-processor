@@ -147,6 +147,24 @@ class Parser:
                     | <return_statement> ";"
                     | <block>
         """
+        if self.peek()[0] == "TYPE":
+            return self.parse_declaration()
+        elif self.peek()[0] == "ID" and self.peek_next()[1] == "=":
+            return self.parse_assignment()
+        elif self.peek()[0] == "ID" and self.peek_next()[1] == "(":
+            return self.parse_function_call()
+        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "return":
+            return self.parse_return_statement()
+        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "if":
+            return self.parse_if_statement()
+        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "while":
+            return self.parse_while_statement()
+        elif self.peek()[0] == "KEYWORD" and self.peek()[1] == "for":
+            return self.parse_for_statement()
+        elif self.peek()[0] == "LBRACE":
+            return self.parse_block()
+        else:
+            raise SyntaxError(f"Unexpected token: {self.peek()}")
 
     def parse_declaration(self):
         """
@@ -199,13 +217,10 @@ class Parser:
         <arguments> = <expression> ("," <expression>)*
         """
         args = [self.parse_expression()]
-        while self.peek()[1] == ",":
+        while self.peek() and self.peek()[0] == "COMMA":
             self.consume("COMMA")
             args.append(self.parse_expression())
-        return {
-            "node": "arguments",
-            "args": args,
-        }
+        return args
     
     def parse_return_statement(self):
         """
