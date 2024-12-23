@@ -265,7 +265,7 @@ class TestCC(unittest.TestCase):
             }
         ]
         self.assertEqual(node, expected)
-    
+
     # this test might be too long
     def test_parse_block_complex(self):
         code = """
@@ -1135,4 +1135,39 @@ class TestCC(unittest.TestCase):
         parser = Parser(tokens)
         node = parser.parse_statement()
         expected = []
+        self.assertEqual(node, expected)
+
+    # parse_parameters tests
+
+    def test_parse_parameters_single(self):
+        code = "char a"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_parameters()
+        expected = [
+            {
+                "node": "parameter",
+                "type": "char",
+                "name": "a",
+            }
+        ]
+        self.assertEqual(node, expected)
+
+    def test_parse_parameters_multiple(self):
+        code = "char a, int b"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_parameters()
+        expected = [
+            {
+                "node": "parameter",
+                "type": "char",
+                "name": "a",
+            },
+            {
+                "node": "parameter",
+                "type": "int",
+                "name": "b",
+            },
+        ]
         self.assertEqual(node, expected)

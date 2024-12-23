@@ -113,28 +113,22 @@ class Parser:
 
     def parse_parameters(self):
         """
-        <parameters> = <parameter> ("," <parameter>)*
+        <parameters> = <type> <identifier> ("," <type> <identifier)*
         """
-        params = [self.parse_parameter()]
-        while self.peek()[1] == ",":
-            self.consume("COMMA")
-            params.append(self.parse_parameter())
-        return {
-            "node": "parameters",
-            "params": params,
-        }
-
-    def parse_parameter(self):
-        """
-        <parameter> = <type> <identifier>
-        """
-        type_ = self.expect("KEYWORD")
-        name = self.expect("ID")
-        return {
+        params = []
+        params.append({
             "node": "parameter",
-            "type": type_,
-            "name": name,
-        }
+            "type": self.consume("TYPE")[1],
+            "name": self.consume("ID")[1],
+        })
+        while self.peek() and self.peek()[1] == ",":
+            self.consume("COMMA")
+            params.append({
+                "node": "parameter",
+                "type": self.consume("TYPE")[1],
+                "name": self.consume("ID")[1],
+            })
+        return params
 
     def parse_statement(self):
         """
