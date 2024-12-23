@@ -235,3 +235,16 @@ class TestCC(unittest.TestCase):
             },
         }
         self.assertEqual(node, expected)
+
+    # parse_block tests
+
+    def test_parse_block_empty(self):
+        code = "{ }"
+        tokens = tokenize(code)
+        parser = Parser(tokens)
+        node = parser.parse_block()
+        expected = {
+            "node": "block",
+            "body": [],
+        }
+        self.assertEqual(node, expected)
