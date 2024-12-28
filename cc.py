@@ -513,7 +513,30 @@ class CodeGenerator:
         pass
 
     def generate_if_statement_code(self, node):
-        pass
+        """
+        Generate code for an if statement
+        """
+        self.label_counter += 1
+        if_label = f"if_{self.label_counter}"
+        end_label = f"end_if_{self.label_counter}"
+        else_label = f"else_{self.label_counter}"
+        self.code.append(f"{if_label}:")
+
+        condition_reg = self.generate_expression_code(node["condition"])
+        self.code.append(f"CMP ${condition_reg}, $1") # 1 means true
+        if node["else_body"]:
+            self.code.append(f"JPNZ {else_label}") # Jump if not zero, meaning false
+        else:
+            self.code.append(f"JPNZ {end_label}")
+
+        self.generate_block_code(node["body"])
+
+        if node["else_body"]:
+            self.code.append(f"GOTO {end_label}")
+            self.code.append(f"{else_label}:")
+            self.generate_block_code(node["else_body"])
+
+        self.code.append(f"{end_label}:")
 
     def generate_while_statement_code(self, node):
         pass
