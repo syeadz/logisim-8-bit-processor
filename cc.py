@@ -418,6 +418,8 @@ class CodeGenerator:
         self.register_pool = {i: None for i in range(4, 16)}
         self.free_regs = 12
 
+        self.call_stack = []
+
     def get_free_reg(self, var) -> int:
         """
         Get a free register for a variable.
@@ -453,6 +455,7 @@ class CodeGenerator:
 
     def generate_function_code(self, node):
         # TODO: implement parameter and return value handling
+        self.call_stack.append(node["name"])
         self.code.append(f"{node['name']}:")
         self.generate_block_code(node["body"])
 
@@ -531,6 +534,7 @@ class CodeGenerator:
             self.code.append(f"JPNZ {else_label}")  # Jump if not zero, meaning false
         else:
             self.code.append(f"JPNZ {end_label}")
+        self.release_reg(condition_reg)
 
         self.generate_block_code(node["body"])
 
@@ -540,6 +544,7 @@ class CodeGenerator:
             self.generate_block_code(node["else_body"])
 
         self.code.append(f"{end_label}:")
+        
 
     def generate_while_statement_code(self, node):
         pass
