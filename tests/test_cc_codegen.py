@@ -65,7 +65,7 @@ class TestCCCodeGen(unittest.TestCase):
         self.assertEqual(result, 4)
         self.assertEqual(gen.code, ["LWI $5, 123", "MOV $4, $5"])
 
-    def test_generate_binary_operator_code(self):
+    def test_generate_binary_operator_code_add(self):
         node = {
             "node": "binary_operation",
             "operator": "+",
@@ -83,6 +83,83 @@ class TestCCCodeGen(unittest.TestCase):
 
         self.assertEqual(result, 4)
         self.assertEqual(gen.code, ["LWI $4, 123", "LWI $5, 456", "ADD $4, $5"])
+
+    def test_generate_binary_operator_code_subtract(self):
+        node = {
+            "node": "binary_operation",
+            "operator": "-",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "456",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 4)
+        self.assertEqual(gen.code, ["LWI $4, 123", "LWI $5, 456", "SUB $4, $5"])
+
+    def test_generate_binary_operator_code_less_than(self):
+        node = {
+            "node": "binary_operation",
+            "operator": "<",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "255",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 4)
+        self.assertEqual(
+            gen.code,
+            [
+                "LWI $4, 123",
+                "LWI $5, 255",
+                "CMP $4, $5",
+                "JPNC skip_set_1",
+                "MOV $4, $1",
+                "skip_set_1:",
+            ],
+        )
+
+    def test_generate_binary_operator_code_greater_than(self):
+        node = {
+            "node": "binary_operation",
+            "operator": ">",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "255",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 4)
+        self.assertEqual(
+            gen.code,
+            [
+                "LWI $4, 123",
+                "LWI $5, 255",
+                "CMP $4, $5",
+                "JPC skip_set_1",
+                "MOV $4, $1",
+                "skip_set_1:",
+            ],
+        )
 
     def test_generate_function_code(self):
         node = {

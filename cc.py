@@ -566,13 +566,29 @@ class CodeGenerator:
         """
         left = self.generate_expression_code(node["left"])
         right = self.generate_expression_code(node["right"])
-        operation = {
-            "+": "ADD",
-            "-": "SUB",
-        }[node["operator"]]
-        self.code.append(f"{operation} ${left}, ${right}")
-        self.release_reg(right)
-        return left
+
+        if node["operator"] in ["+", "-"]:
+            operation = {
+                "+": "ADD",
+                "-": "SUB",
+            }[node["operator"]]
+            self.code.append(f"{operation} ${left}, ${right}")
+            self.release_reg(right)
+            return left
+        if node["operator"] in ["<", ">"]:
+            self.label_counter += 1
+            label = f"skip_set_{self.label_counter}"
+
+            self.code.append(f"CMP ${left}, ${right}")
+            if node["operator"] == "<":
+                self.code.append(f"JPNC {label}")
+            if node["operator"] == ">":
+                self.code.append(f"JPC {label}")
+            self.release_reg(right)
+
+            self.code.append(f"MOV ${left}, $1")
+            self.code.append(f"{label}:")
+            return left
 
     def generate_identifier_code(self, node) -> int:
         """
