@@ -63,3 +63,22 @@ class TestCCCodeGen(unittest.TestCase):
 
         self.assertEqual(result, 4)
         self.assertEqual(gen.code, ["LWI $5, 123", "MOV $4, $5"])
+
+    def test_generate_binary_operator_code(self):
+        node = {
+            "node": "binary_operation",
+            "operator": "+",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "456",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 4)
+        self.assertEqual(gen.code, ["LWI $4, 123", "LWI $5, 456", "ADD $4, $5"])

@@ -496,8 +496,8 @@ class CodeGenerator:
         operation = {
             "+": "ADD",
             "-": "SUB",
-        }[node["op"]]
-        self.code.append(f"{operation} {left}, {right}")
+        }[node["operator"]]
+        self.code.append(f"{operation} ${left}, ${right}")
         self.release_reg(right)
         return left
 
