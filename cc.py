@@ -567,22 +567,22 @@ class CodeGenerator:
         left = self.generate_expression_code(node["left"])
         right = self.generate_expression_code(node["right"])
 
-        if node["operator"] in ["+", "-"]:
+        if node["op"] in ["+", "-"]:
             operation = {
                 "+": "ADD",
                 "-": "SUB",
-            }[node["operator"]]
+            }[node["op"]]
             self.code.append(f"{operation} ${left}, ${right}")
             self.release_reg(right)
             return left
-        if node["operator"] in ["<", ">"]:
+        if node["op"] in ["<", ">"]:
             self.label_counter += 1
             label = f"skip_set_{self.label_counter}"
 
             self.code.append(f"CMP ${left}, ${right}")
-            if node["operator"] == "<":
+            if node["op"] == "<":
                 self.code.append(f"JPNC {label}")
-            if node["operator"] == ">":
+            if node["op"] == ">":
                 self.code.append(f"JPC {label}")
             self.release_reg(right)
 
@@ -628,5 +628,5 @@ if __name__ == "__main__":
     parser.pretty_print()
 
     generator = CodeGenerator(parser.ast)
-    generator.generate_code()
+    generator.generate_program_code()
     generator.pretty_print()

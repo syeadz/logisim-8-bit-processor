@@ -68,7 +68,7 @@ class TestCCCodeGen(unittest.TestCase):
     def test_generate_binary_operator_code_add(self):
         node = {
             "node": "binary_operator",
-            "operator": "+",
+            "op": "+",
             "left": {
                 "node": "number",
                 "value": "123",
@@ -87,7 +87,7 @@ class TestCCCodeGen(unittest.TestCase):
     def test_generate_binary_operator_code_subtract(self):
         node = {
             "node": "binary_operator",
-            "operator": "-",
+            "op": "-",
             "left": {
                 "node": "number",
                 "value": "123",
@@ -106,7 +106,7 @@ class TestCCCodeGen(unittest.TestCase):
     def test_generate_binary_operator_code_less_than(self):
         node = {
             "node": "binary_operator",
-            "operator": "<",
+            "op": "<",
             "left": {
                 "node": "number",
                 "value": "123",
@@ -135,7 +135,7 @@ class TestCCCodeGen(unittest.TestCase):
     def test_generate_binary_operator_code_greater_than(self):
         node = {
             "node": "binary_operator",
-            "operator": ">",
+            "op": ">",
             "left": {
                 "node": "number",
                 "value": "123",
@@ -240,7 +240,7 @@ class TestCCCodeGen(unittest.TestCase):
             "node": "if_statement",
             "condition": {
                 "node": "binary_operator",
-                "operator": "<",
+                "op": "<",
                 "left": {
                     "node": "number",
                     "value": "123",
