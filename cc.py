@@ -446,6 +446,42 @@ class CodeGenerator:
                 return reg
         return None
 
+    def generate_program_code(self):
+        for function in self.ast["functions"]:
+            self.generate_function_code(function)
+
+    def generate_function_code(self, node):
+        # TODO: implement parameter and return value handling
+        self.code.append(f"{node['name']}:")
+        self.generate_block_code(node["body"])
+
+    def generate_block_code(self, block):
+        # Could push and pop registers here, for now just free all previously unused registers at the end of the block
+        list_of_used_args = []
+        for reg, value in self.register_pool.items():
+            if value:
+                list_of_used_args.append(reg)
+
+        for item in block:
+            if item["node"] == "declaration":
+                self.generate_declaration_code(item)
+            elif item["node"] == "assignment":
+                self.generate_assignment_code(item)
+            elif item["node"] == "function_call":
+                self.generate_function_call_code(item)
+            elif item["node"] == "if_statement":
+                self.generate_if_statement_code(item)
+            elif item["node"] == "while_statement":
+                self.generate_while_statement_code(item)
+            elif item["node"] == "for_statement":
+                self.generate_for_statement_code(item)
+            elif item["node"] == "return_statement":
+                self.generate_return_statement_code(item)
+
+        # Free all registers that were not used previously since they are not needed
+        for reg in list_of_used_args:
+            if self.register_pool[reg] not in [item["name"] for item in block]:
+                self.release_reg(reg)
 
     def generate_declaration_code(self, node) -> int:
         """
@@ -473,6 +509,20 @@ class CodeGenerator:
         else:
             raise Exception(f"Variable {node['left']['value']} not found, should have been declared or assigned")
 
+    def generate_function_call_code(self, node):
+        pass
+
+    def generate_if_statement_code(self, node):
+        pass
+
+    def generate_while_statement_code(self, node):
+        pass
+
+    def generate_for_statement_code(self, node):
+        pass
+
+    def generate_return_statement_code(self, node):
+        pass
 
     def generate_expression_code(self, node):
         """
@@ -518,3 +568,26 @@ class CodeGenerator:
         reg = self.get_free_reg(node["value"])
         self.code.append(f"LWI ${reg}, {node['value']}")
         return reg
+        
+
+    def pretty_print(self):
+        for line in self.code:
+            print(line)
+
+if __name__ == "__main__":
+    code = """
+    int main() {
+        int a = 10;
+        int b = 20;
+        int c = a + b;
+        return c;
+    }
+    """
+    tokens = tokenize(code)
+    parser = Parser(tokens)
+    parser.parse()
+    parser.pretty_print()
+
+    generator = CodeGenerator(parser.ast)
+    generator.generate_code()
+    generator.pretty_print()
