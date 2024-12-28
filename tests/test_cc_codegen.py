@@ -100,3 +100,26 @@ class TestCCCodeGen(unittest.TestCase):
         gen.generate_function_code(node)
 
         self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4"])
+
+    def test_generate_program_code(self):
+        node = {
+            "node": "program",
+            "functions": [
+                {
+                    "node": "function",
+                    "name": "main",
+                    "body": [
+                        {
+                            "node": "declaration",
+                            "type": "char",
+                            "name": "a",
+                            "value": {"node": "number", "value": "123"},
+                        },
+                    ],
+                },
+            ],
+        }
+        gen = CodeGenerator(node)
+        gen.generate_program_code()
+
+        self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4"])
