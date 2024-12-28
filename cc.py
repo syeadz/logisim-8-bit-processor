@@ -1,4 +1,5 @@
 import re
+import sys
 
 # Define token types
 TOKENS = [
@@ -507,7 +508,9 @@ class CodeGenerator:
             self.release_reg(value_reg)
             return reg
         else:
-            raise Exception(f"Variable {node['left']['value']} not found, should have been declared or assigned")
+            raise Exception(
+                f"Variable {node['left']['value']} not found, should have been declared or assigned"
+            )
 
     def generate_function_call_code(self, node):
         pass
@@ -523,9 +526,9 @@ class CodeGenerator:
         self.code.append(f"{if_label}:")
 
         condition_reg = self.generate_expression_code(node["condition"])
-        self.code.append(f"CMP ${condition_reg}, $1") # 1 means true
+        self.code.append(f"CMP ${condition_reg}, $1")  # 1 means true
         if node["else_body"]:
-            self.code.append(f"JPNZ {else_label}") # Jump if not zero, meaning false
+            self.code.append(f"JPNZ {else_label}")  # Jump if not zero, meaning false
         else:
             self.code.append(f"JPNZ {end_label}")
 
@@ -598,7 +601,9 @@ class CodeGenerator:
         if reg:
             return reg
         else:
-            raise Exception(f"Variable {node['value']} not found, should have been declared or assigned")
+            raise Exception(
+                f"Variable {node['value']} not found, should have been declared or assigned"
+            )
 
     def generate_number_code(self, node) -> int:
         """
@@ -607,21 +612,30 @@ class CodeGenerator:
         reg = self.get_free_reg(node["value"])
         self.code.append(f"LWI ${reg}, {node['value']}")
         return reg
-        
 
     def pretty_print(self):
         for line in self.code:
-            print(line)
+            if line.endswith(":"):
+                print(line)
+            else:
+                print(f"\t{line}")
+
 
 if __name__ == "__main__":
-    code = """
-    int main() {
-        int a = 10;
-        int b = 20;
-        int c = a + b;
-        return c;
-    }
-    """
+    try:
+        file_name = sys.argv[1]
+    except IndexError:
+        file_name = "test.c"
+
+    try:
+        output_file = sys.argv[2]
+    except IndexError:
+        just_file_name = file_name.split("/")[-1]
+        output_file = f"{just_file_name[:-2]}.asm"
+
+    with open(file_name, "r") as file:
+        code = file.read()
+
     tokens = tokenize(code)
     parser = Parser(tokens)
     parser.parse()
@@ -630,3 +644,10 @@ if __name__ == "__main__":
     generator = CodeGenerator(parser.ast)
     generator.generate_program_code()
     generator.pretty_print()
+
+    with open(output_file, "w") as file:
+        for line in generator.code:
+            if line.endswith(":"):
+                file.write(f"{line}\n")
+            else:
+                file.write(f"\t{line}\n")
