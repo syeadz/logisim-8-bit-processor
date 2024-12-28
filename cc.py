@@ -406,3 +406,115 @@ if __name__ == "__main__":
     parser = Parser(tokens)
     parser.parse()
     parser.pretty_print()
+
+
+class CodeGenerator:
+    def __init__(self, ast):
+        self.ast = ast
+        self.code = []
+        self.label_counter = 0
+
+        self.register_pool = {i: None for i in range(4, 16)}
+        self.free_regs = 12
+
+    def get_free_reg(self, var) -> int:
+        """
+        Get a free register for a variable.
+        """
+        if self.free_regs == 0:
+            # TODO: add logic for spilling
+            raise Exception("No free registers available")
+        for reg, value in self.register_pool.items():
+            if value == None:
+                self.register_pool[reg] = var
+                self.free_regs -= 1
+                return reg
+
+    def release_reg(self, reg):
+        """
+        Release a register.
+        """
+        self.register_pool[reg] = None
+        self.free_regs += 1
+
+    def is_var_in_reg(self, var) -> int:
+        """
+        Check if a variable is stored in a register. If so, return the register.
+        """
+        for reg, value in self.register_pool.items():
+            if value == var:
+                return reg
+        return None
+
+
+    def generate_declaration_code(self, node) -> int:
+        """
+        Generate code for a declaration, returns the register where the result/variable is stored.
+        """
+        if node["value"]:
+            value_reg = self.generate_expression_code(node["value"])
+            reg = self.get_free_reg(node["name"])
+            self.code.append(f"MOV ${reg}, ${value_reg}")
+            self.release_reg(value_reg)
+            return reg
+        else:
+            return self.get_free_reg(node["name"])
+
+    def generate_assignment_code(self, node) -> int:
+        """
+        Generate code for an assignment, returns the register where the result is stored.
+        """
+        value_reg = self.generate_expression_code(node["right"])
+        reg = self.is_var_in_reg(node["left"]["value"])
+        if reg:
+            self.code.append(f"MOV ${reg}, ${value_reg}")
+            self.release_reg(value_reg)
+            return reg
+        else:
+            raise Exception(f"Variable {node['left']['value']} not found, should have been declared or assigned")
+
+
+    def generate_expression_code(self, node):
+        """
+        Generate code for an expression, returns the register where the result is stored.
+        """
+        if node["node"] == "binary_operator":
+            return self.generate_binary_operator_code(node)
+        elif node["node"] == "identifier":
+            return self.generate_identifier_code(node)
+        elif node["node"] == "number":
+            return self.generate_number_code(node)
+        else:
+            raise Exception("TODO: Implement other expression types")
+
+    def generate_binary_operator_code(self, node) -> int:
+        """
+        Generate code for a binary operator, returns the register where the result is stored.
+        """
+        left = self.generate_expression_code(node["left"])
+        right = self.generate_expression_code(node["right"])
+        operation = {
+            "+": "ADD",
+            "-": "SUB",
+        }[node["op"]]
+        self.code.append(f"{operation} {left}, {right}")
+        self.release_reg(right)
+        return left
+
+    def generate_identifier_code(self, node) -> int:
+        """
+        Generate code for an identifier, returns the register where the result is stored.
+        """
+        reg = self.is_var_in_reg(node["value"])
+        if reg:
+            return reg
+        else:
+            raise Exception(f"Variable {node['value']} not found, should have been declared or assigned")
+
+    def generate_number_code(self, node) -> int:
+        """
+        Generate code for a number, returns the register where the result is stored.
+        """
+        reg = self.get_free_reg(node["value"])
+        self.code.append(f"LWI ${reg}, {node['value']}")
+        return reg
