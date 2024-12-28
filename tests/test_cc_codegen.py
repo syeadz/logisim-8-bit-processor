@@ -67,7 +67,7 @@ class TestCCCodeGen(unittest.TestCase):
 
     def test_generate_binary_operator_code_add(self):
         node = {
-            "node": "binary_operation",
+            "node": "binary_operator",
             "operator": "+",
             "left": {
                 "node": "number",
@@ -86,7 +86,7 @@ class TestCCCodeGen(unittest.TestCase):
 
     def test_generate_binary_operator_code_subtract(self):
         node = {
-            "node": "binary_operation",
+            "node": "binary_operator",
             "operator": "-",
             "left": {
                 "node": "number",
@@ -105,7 +105,7 @@ class TestCCCodeGen(unittest.TestCase):
 
     def test_generate_binary_operator_code_less_than(self):
         node = {
-            "node": "binary_operation",
+            "node": "binary_operator",
             "operator": "<",
             "left": {
                 "node": "number",
@@ -134,7 +134,7 @@ class TestCCCodeGen(unittest.TestCase):
 
     def test_generate_binary_operator_code_greater_than(self):
         node = {
-            "node": "binary_operation",
+            "node": "binary_operator",
             "operator": ">",
             "left": {
                 "node": "number",
@@ -227,6 +227,52 @@ class TestCCCodeGen(unittest.TestCase):
             gen.code,
             [
                 "if_1:",
+                "CMP $4, $1",
+                "JPNZ end_if_1",
+                "LWI $5, 1",
+                "MOV $6, $5",
+                "end_if_1:",
+            ],
+        )
+
+    def test_generate_if_statement_code_less_than(self):
+        node = {
+            "node": "if_statement",
+            "condition": {
+                "node": "binary_operator",
+                "operator": "<",
+                "left": {
+                    "node": "number",
+                    "value": "123",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "255",
+                },
+            },
+            "body": [
+                {
+                    "node": "declaration",
+                    "type": "char",
+                    "name": "b",
+                    "value": {"node": "number", "value": "1"},
+                },
+            ],
+            "else_body": None,
+        }
+        gen = CodeGenerator(None)
+        gen.generate_if_statement_code(node)
+
+        self.assertEqual(
+            gen.code,
+            [
+                "if_1:",
+                "LWI $4, 123",
+                "LWI $5, 255",
+                "CMP $4, $5",
+                "JPNC skip_set_2",
+                "MOV $4, $1",
+                "skip_set_2:",
                 "CMP $4, $1",
                 "JPNZ end_if_1",
                 "LWI $5, 1",
