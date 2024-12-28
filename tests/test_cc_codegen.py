@@ -14,6 +14,7 @@ class TestCCCodeGen(unittest.TestCase):
     def test_generate_identifier_code(self):
         node = {"name": "identifier", "value": "foo"}
         gen = CodeGenerator(None)
+        gen.get_free_reg("foo")
         result = gen.generate_identifier_code(node)
 
         self.assertEqual(result, 4)
@@ -123,3 +124,36 @@ class TestCCCodeGen(unittest.TestCase):
         gen.generate_program_code()
 
         self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4"])
+
+    def test_generate_if_statement_code_identifier(self):
+        node = {
+            "node": "if_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [
+                {
+                    "node": "declaration",
+                    "type": "char",
+                    "name": "b",
+                    "value": {"node": "number", "value": "1"},
+                },
+            ],
+            "else_body": None,
+        }
+        gen = CodeGenerator(None)
+        gen.get_free_reg("a")
+        gen.generate_if_statement_code(node)
+
+        self.assertEqual(
+            gen.code,
+            [
+                "if_1:",
+                "CMP $4, $1",
+                "JPNZ end_if_1",
+                "LWI $5, 1",
+                "MOV $6, $5",
+                "end_if_1:",
+            ],
+        )
