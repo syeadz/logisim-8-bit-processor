@@ -488,7 +488,7 @@ class CodeGenerator:
                 self.release_reg(reg)
 
         # if end of main function, add halt
-        if self.call_stack[-1] == "main":
+        if self.call_stack and self.call_stack[-1] == "main":
             self.code.append("HALT")
 
     def generate_declaration_code(self, node) -> int:
@@ -526,6 +526,11 @@ class CodeGenerator:
         """
         Generate code for an if statement
         """
+        used_regs = []
+        for reg, value in self.register_pool.items():
+            if value:
+                used_regs.append(reg)
+        
         self.label_counter += 1
         if_label = f"if_{self.label_counter}"
         end_label = f"end_if_{self.label_counter}"
@@ -538,7 +543,8 @@ class CodeGenerator:
             self.code.append(f"JPNZ {else_label}")  # Jump if not zero, meaning false
         else:
             self.code.append(f"JPNZ {end_label}")
-        self.release_reg(condition_reg)
+        if condition_reg not in used_regs:
+            self.release_reg(condition_reg)
 
         self.generate_block_code(node["body"])
 

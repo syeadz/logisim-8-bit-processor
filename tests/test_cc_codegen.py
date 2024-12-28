@@ -177,7 +177,7 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(None)
         gen.generate_function_code(node)
 
-        self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4"])
+        self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4", "HALT"])
 
     def test_generate_program_code(self):
         node = {
@@ -200,7 +200,7 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(node)
         gen.generate_program_code()
 
-        self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4"])
+        self.assertEqual(gen.code, ["main:", "LWI $4, 123", "MOV $5, $4", "HALT"])
 
     def test_generate_if_statement_code_identifier(self):
         node = {
@@ -275,8 +275,9 @@ class TestCCCodeGen(unittest.TestCase):
                 "skip_set_2:",
                 "CMP $4, $1",
                 "JPNZ end_if_1",
-                "LWI $5, 1",
-                "MOV $6, $5",
+                "LWI $4, 1",
+                "MOV $5, $4",
                 "end_if_1:",
             ],
         )
+
