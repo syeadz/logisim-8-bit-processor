@@ -487,6 +487,10 @@ class CodeGenerator:
             if self.register_pool[reg] not in [item["name"] for item in block]:
                 self.release_reg(reg)
 
+        # if end of main function, add halt
+        if self.call_stack[-1] == "main":
+            self.code.append("HALT")
+
     def generate_declaration_code(self, node) -> int:
         """
         Generate code for a declaration, returns the register where the result/variable is stored.
