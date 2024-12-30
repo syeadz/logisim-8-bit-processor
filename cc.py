@@ -557,7 +557,30 @@ class CodeGenerator:
         
 
     def generate_while_statement_code(self, node):
-        pass
+        """
+        Generate code for a while statement
+        """
+        used_regs = []
+        for reg, value in self.register_pool.items():
+            if value:
+                used_regs.append(reg)
+        
+        self.label_counter += 1
+        while_label = f"while_{self.label_counter}"
+        end_label = f"end_while_{self.label_counter}"
+        self.code.append(f"{while_label}:")
+
+        condition_reg = self.generate_expression_code(node["condition"])
+        self.code.append(f"CMP ${condition_reg}, $1")
+        if condition_reg not in used_regs:
+            self.release_reg(condition_reg)
+        self.code.append(f"JPNZ {end_label}")
+
+        self.generate_block_code(node["body"])
+
+        self.code.append(f"GOTO {while_label}")
+
+        self.code.append(f"{end_label}:")
 
     def generate_for_statement_code(self, node):
         pass

@@ -281,3 +281,35 @@ class TestCCCodeGen(unittest.TestCase):
             ],
         )
 
+    def test_generate_while_statement_code_identifier(self):
+        node = {
+            "node": "while_statement",
+            "condition": {
+                "node": "identifier",
+                "value": "a",
+            },
+            "body": [
+                {
+                    "node": "declaration",
+                    "type": "char",
+                    "name": "b",
+                    "value": {"node": "number", "value": "1"},
+                },
+            ],
+        }
+        gen = CodeGenerator(None)
+        gen.get_free_reg("a")
+        gen.generate_while_statement_code(node)
+
+        self.assertEqual(
+            gen.code,
+            [
+                "while_1:",
+                "CMP $4, $1",
+                "JPNZ end_while_1",
+                "LWI $5, 1",
+                "MOV $6, $5",
+                "GOTO while_1",
+                "end_while_1:",
+            ],
+        )
