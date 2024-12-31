@@ -1,0 +1,25 @@
+name: Python Tests
+
+on:
+  push:
+    branches:
+      - master  # Trigger tests on pushes to the master branch
+  pull_request:
+    branches:
+      - master  # Trigger tests on pull requests to the master branch
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'  # Use any version of Python 3
+
+      - name: Run tests
+        run: python -m unittest discover tests/
