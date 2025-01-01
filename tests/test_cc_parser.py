@@ -1,6 +1,18 @@
 import unittest
-from cc import tokenize, Parser
+from cc import tokenize, Parser, CodeGenerator
 
+class TestCCRegisterPool(unittest.TestCase):
+    def test_remove_missing_regs(self):
+        cc = CodeGenerator(None)
+        cc.get_free_reg("a")
+        cc.get_free_reg("b")
+        cc.get_free_reg("c")
+        cc.remove_missing_regs([4, 6])
+
+        self.assertEqual(cc.free_regs, 10)
+        self.assertEqual(cc.register_pool[4], "a")
+        self.assertEqual(cc.register_pool[5], None)
+        self.assertEqual(cc.register_pool[6], "c")
 
 class TestCCParser(unittest.TestCase):
     def test_tokenize(self):

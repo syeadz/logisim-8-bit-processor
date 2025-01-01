@@ -448,6 +448,15 @@ class CodeGenerator:
             if value == var:
                 return reg
         return None
+    
+    def remove_missing_regs(self, list_of_regs):
+        """
+        Remove registers that are not in the list of used registers.
+        """
+        for reg, value in self.register_pool.items():
+            if value and reg not in list_of_regs:
+                self.register_pool[reg] = None
+                self.free_regs += 1
 
     def generate_program_code(self):
         for function in self.ast["functions"]:
