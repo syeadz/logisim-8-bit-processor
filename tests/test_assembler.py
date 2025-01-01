@@ -1,6 +1,6 @@
 import unittest
 
-from assembler import assemble_instruction
+from assembler import assemble_instruction, expand_macro
 
 pf = "00"
 
@@ -137,3 +137,149 @@ class TestAssembleInstruction(unittest.TestCase):
         operands = ["$1", "$2"]
         expected = pf + "11110000100001"
         self.assertEqual(assemble_instruction(mnemonic, operands), expected)
+
+    # macro instructions
+
+    def test_nop(self):
+        mnemonic = "NOP"
+        operands = []
+        expected = ["ADD $zero, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_inc(self):
+        mnemonic = "INC"
+        operands = ["$1"]
+        expected = ["ADD $1, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_dec(self):
+        mnemonic = "DEC"
+        operands = ["$1"]
+        expected = ["SUB $1, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_not(self):
+        mnemonic = "NOT"
+        operands = ["$1"]
+        expected = ["XNOR $1, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_neg(self):
+        mnemonic = "NEG"
+        operands = ["$1"]
+        expected = ["XNOR $1, $zero", "ADD $1, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_xor(self):
+        mnemonic = "XOR"
+        operands = ["$1", "$2"]
+        expected = ["XNOR $1, $2", "XNOR $1, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_cmp(self):
+        mnemonic = "CMP"
+        operands = ["$1", "$2"]
+        expected = ["MOV $temp, $1", "SUB $temp, $2"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_setc(self):
+        mnemonic = "SETC"
+        operands = []
+        expected = ["LWI $temp, 0xFF", "ADD $2, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_clrc(self):
+        mnemonic = "CLRC"
+        operands = []
+        expected = ["ADD $zero, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_rlc(self):
+        mnemonic = "RLC"
+        operands = ["$1"]
+        expected = ["ADC $1, $1"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_sl0(self):
+        mnemonic = "SL0"
+        operands = ["$1"]
+        expected = ["ADD $1, $1"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_sl1(self):
+        mnemonic = "SL1"
+        operands = ["$1"]
+        expected = ["ADD $1, $1", "ADD $1, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_sr0(self):
+        mnemonic = "SR0"
+        operands = ["$1"]
+        expected = ["ADD $zero, $zero", "ADC $1, $1"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_sr1(self):
+        mnemonic = "SR1"
+        operands = ["$1"]
+        expected = ["LWI $temp, 0xFF", "ADD $2, $one", "RRC $1"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_push(self):
+        mnemonic = "PUSH"
+        operands = ["$1"]
+        expected = ["SW $sp, $1", "SUB $3, $one"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_pop(self):
+        mnemonic = "POP"
+        operands = ["$1"]
+        expected = ["ADD $3, $one", "LW $1, $sp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_andi(self):
+        mnemonic = "ANDI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "AND $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_ori(self):
+        mnemonic = "ORI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "OR $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_xori(self):
+        mnemonic = "XORI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "XNOR $1, $2", "XNOR $1, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_addi(self):
+        mnemonic = "ADDI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "ADD $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_adci(self):
+        mnemonic = "ADCI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "ADC $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_subi(self):
+        mnemonic = "SUBI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "SUB $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_sbci(self):
+        mnemonic = "SBCI"
+        operands = ["$1", "0x2D5"]
+        expected = ["LWI $temp, 0x2D5", "SBC $1, $temp"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
+
+    def test_clr(self):
+        mnemonic = "CLR"
+        operands = ["$1"]
+        expected = ["MOV $1, $zero"]
+        self.assertEqual(expand_macro(mnemonic, operands), expected)
