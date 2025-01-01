@@ -206,6 +206,72 @@ class TestCCCodeGen(unittest.TestCase):
             ],
         )
 
+    def test_generate_binary_operator_code_equal(self):
+        node = {
+            "node": "binary_operator",
+            "op": "==",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "255",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 6)
+        self.assertEqual(
+            gen.code,
+            [
+                "LWI $4, 123",
+                "LWI $5, 255",
+                "MOV $6, $4",
+                "CMP $6, $5",
+                "JPZ set_1",
+                "MOV $6, $0",
+                "GOTO end_set_1",
+                "set_1:",
+                "MOV $6, $1",
+                "end_set_1:",
+            ],
+        )
+
+    def test_generate_binary_operator_code_not_equal(self):
+        node = {
+            "node": "binary_operator",
+            "op": "!=",
+            "left": {
+                "node": "number",
+                "value": "123",
+            },
+            "right": {
+                "node": "number",
+                "value": "255",
+            },
+        }
+        gen = CodeGenerator(None)
+        result = gen.generate_binary_operator_code(node)
+
+        self.assertEqual(result, 6)
+        self.assertEqual(
+            gen.code,
+            [
+                "LWI $4, 123",
+                "LWI $5, 255",
+                "MOV $6, $4",
+                "CMP $6, $5",
+                "JPNZ set_1",
+                "MOV $6, $0",
+                "GOTO end_set_1",
+                "set_1:",
+                "MOV $6, $1",
+                "end_set_1:",
+            ],
+        )
+
     def test_generate_function_code(self):
         node = {
             "node": "function",
