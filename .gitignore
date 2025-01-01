@@ -1,6 +1,9 @@
 .vscode
-__pycache__
 
 *.hex
 
 test.asm
+test.c
+
+__pycache__
+.pytest_cache
