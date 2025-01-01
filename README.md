@@ -68,6 +68,7 @@ This will generate a file called `if.hex` that can be loaded into the ROM in Log
 
 #### C Examples
 
+* `examples/fib.c` - Calculates the 13th Fibonacci number and writes it to the 7-segment display
 * `examples/if.c` - Simple if statements that writes to the 7-segment display
 * `examples/while.c` - Simple while loop that writes to the 7-segment display
 * `examples/for.c` - Simple for loop that writes to the 7-segment display
