@@ -450,6 +450,12 @@ class CodeGenerator:
                 return reg
         return None
 
+    def is_reg_used(self, reg) -> bool:
+        """
+        Check if a register is used.
+        """
+        return self.register_pool[reg] is not None
+
     def remove_missing_regs(self, list_of_regs):
         """
         Remove registers that are not in the list of used registers.
@@ -525,44 +531,41 @@ class CodeGenerator:
         var_name = node["left"]["value"]
         if reg:
             self.code.append(f"MOV ${reg}, ${value_reg}")
-            self.release_reg(value_reg)
+            if node["right"]["node"] != "identifier":
+                self.release_reg(value_reg)
             return reg
-        if var_name == "SEG0":
+        elif var_name == "SEG0":
             self.code.append("LWI $2, 0x1F")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "SEG1":
+        elif var_name == "SEG1":
             self.code.append("LWI $2, 0x3F")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "SEG2":
+        elif var_name == "SEG2":
             self.code.append("LWI $2, 0x5F")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "SEG3":
+        elif var_name == "SEG3":
             self.code.append("LWI $2, 0x9F")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "TERMI":
+        elif var_name == "TERMI":
             self.code.append("LWI $2, 0x7F")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "VIDX":
+        elif var_name == "VIDX":
             self.code.append("LWI $2, 0xBF")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "VIDY":
+        elif var_name == "VIDY":
             self.code.append("LWI $2, 0xDF")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
-        if var_name == "VIDI":
+        elif var_name == "VIDI":
             self.code.append("LWI $2, 0xFF")
             self.code.append(f"SW $2, ${value_reg}")
-            return -1
         else:
             raise Exception(
-                f"Variable {node['left']['value']} not found, should have been declared or assigned"
+                f"Variable {var_name} not found, should have been declared or assigned"
             )
+        
+        if node["right"]["node"] != "identifier":
+            self.release_reg(value_reg)
+        return -1
 
     def generate_function_call_code(self, node):
         pass
