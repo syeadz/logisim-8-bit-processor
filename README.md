@@ -6,6 +6,10 @@ Some changes were made to simplify the design and instruction set, notably there
 
 There are a couple libraries and examples written in assembly that can be run on the processor. You will need to download Logisim-evolution to view and run the processor. The processor is capable of writing to a terminal, video output, and 7-segment displays. The processor can also perform basic math operations and has a few macro instructions to simplify assembly code.
 
+Furthermore, there is a very simple C compiler that can compile C code to assembly code that can be run on the processor. The compiler is very limited and can only compile very simple C code. It supports simple if statements, while loops, for loops, and can write to the ports on the processor. There a few examples in the `examples` folder that can be compiled and run on the processor.
+
+Finally, there are tests covering the assembler and C compiler, however there is some repetition in the tests and they are not very comprehensive. The tests are written in Python and can be run with the command `python -m unittest discover tests/`.
+
 ![System in Use](screenshots/system_in_use.png)
 
 ## Pre-requisites
@@ -23,6 +27,26 @@ python assembler.py examples/terminal.asm
 
 This will generate a file called `hello.hex` that can be loaded into the ROM in Logisim. Simply right-click on the ROM module labeled `Instruction_Memory` and select `Load Image...` and select the hex file. Then you can click on the simulate tab on the top-left and click on enable clock ticks (third circular button from the left) to start the processor. You can modify the clock speed under the `Simulate` tab at the top. The processor will run the program and you can see the output in the terminal or video output. You can reset the processor by clicking on the `Reset_Button` in the top left of the design.
 
+## How to compile and run C code
+
+To compile a C file, run the compiler with the C file as an argument. This will output an assembly file that can be assembled with the assembler.
+
+```bash
+python cc.py examples/if.c
+python assembler.py if.asm
+```
+
+This will generate a file called `if.hex` that can be loaded into the ROM in Logisim. Follow the same steps as above to load the hex file into the ROM and run the processor. The compiler can write to special variables that are mapped to the ports on the processor.
+
+* `SEG0` - 7-segment display 0
+* `SEG1` - 7-segment display 1
+* `SEG2` - 7-segment display 2
+* `SEG3` - 7-segment display 3
+* `TERMI` - Terminal input
+* `VIDX` - Video X register
+* `VIDY` - Video Y register
+* `VIDI` - Video input
+
 ## Libraries and Examples
 
 ### Libraries
@@ -34,10 +58,18 @@ This will generate a file called `hello.hex` that can be loaded into the ROM in 
 
 ### Examples
 
+#### Assembly Examples
+
 * `examples/terminal.asm` - Writes HELLO WORLD! to the terminal as well as multiplication and division operations (using math_lib.asm). Operands can be changed by modifying the #define at the top of the file.
 * `examples/video.asm` - Writes a pattern to the video output with squares and colors
 * `examples/prime.asm` - Calculates prime numbers up to 231 and writes them to the terminal. This will take forever if you plan on reaching 231.
 * `examples/fib.asm` - Calculates the 13th Fibonacci number and writes it to the 7 segment display.
+
+#### C Examples
+
+* `examples/if.c` - Simple if statements that writes to the 7-segment display
+* `examples/while.c` - Simple while loop that writes to the 7-segment display
+* `examples/for.c` - Simple for loop that writes to the 7-segment display
 
 ## Instruction Set
 

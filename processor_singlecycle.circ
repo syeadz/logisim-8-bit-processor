@@ -489,27 +489,27 @@
     </comp>
     <comp lib="4" loc="(2000,1000)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="bcd1"/>
+      <a name="label" val="SEG1"/>
     </comp>
     <comp lib="4" loc="(2000,1120)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="bcd2"/>
+      <a name="label" val="SEG2"/>
     </comp>
     <comp lib="4" loc="(2000,880)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="bcd0"/>
+      <a name="label" val="SEG0"/>
     </comp>
     <comp lib="4" loc="(2250,1000)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="vid_xpos"/>
+      <a name="label" val="VIDX"/>
     </comp>
     <comp lib="4" loc="(2250,1120)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="vid_ypos"/>
+      <a name="label" val="VIDY"/>
     </comp>
     <comp lib="4" loc="(2250,880)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
-      <a name="label" val="bcd3"/>
+      <a name="label" val="SEG3"/>
     </comp>
     <comp lib="4" loc="(340,390)" name="Register">
       <a name="appearance" val="logisim_evolution"/>
@@ -593,11 +593,11 @@ b0 509
       <a name="color" val="Atari 2600 (7 bit)"/>
       <a name="cursor" val="No Cursor"/>
     </comp>
-    <comp lib="8" loc="(2030,1250)" name="Text">
-      <a name="text" val="term_data"/>
+    <comp lib="8" loc="(2030,1248)" name="Text">
+      <a name="text" val="TERMI"/>
     </comp>
     <comp lib="8" loc="(2270,1255)" name="Text">
-      <a name="text" val="vid_color"/>
+      <a name="text" val="VIDI"/>
     </comp>
     <comp lib="9" loc="(1050,930)" name="BCD_to_7_Segment_decoder"/>
     <comp lib="9" loc="(1060,1060)" name="Binary_to_BCD_converter">

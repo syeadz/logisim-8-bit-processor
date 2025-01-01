@@ -1,5 +1,9 @@
+.vscode
+
 *.hex
 
-*_backup.circ
-
 test.asm
+test.c
+
+__pycache__
+.pytest_cache
