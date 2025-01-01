@@ -707,7 +707,7 @@ class CodeGenerator:
                 "-": "SUB",
             }[node["op"]]
             self.code.append(f"{operation} ${result}, ${right}")
-        if node["op"] in ["<", ">"]:
+        if node["op"] in ["<", ">", "==", "!="]:
             self.label_counter += 1
             set_1_label = f"set_{self.label_counter}"
             end_label = f"end_set_{self.label_counter}"
@@ -717,6 +717,10 @@ class CodeGenerator:
                 self.code.append(f"JPC {set_1_label}")
             if node["op"] == ">":
                 self.code.append(f"JPNC {set_1_label}")
+            if node["op"] == "==":
+                self.code.append(f"JPZ {set_1_label}")
+            if node["op"] == "!=":
+                self.code.append(f"JPNZ {set_1_label}")
 
             # Set result to 0
             self.code.append(f"MOV ${result}, $0")
