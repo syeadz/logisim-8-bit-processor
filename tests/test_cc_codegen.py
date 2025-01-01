@@ -65,6 +65,37 @@ class TestCCCodeGen(unittest.TestCase):
         self.assertEqual(result, 4)
         self.assertEqual(gen.code, ["LWI $5, 123", "MOV $4, $5"])
 
+    def test_generate_assignment_code_special_identifier(self):
+        special_identifiers = {
+            "SEG0": "0x1F",
+            "SEG1": "0x3F",
+            "SEG2": "0x5F",
+            "SEG3": "0x9F",
+            "TERMI": "0x7F",
+            "VIDX": "0xBF",
+            "VIDY": "0xDF",
+            "VIDI": "0xFF",
+        }
+
+        for identifier, address in special_identifiers.items():
+            with self.subTest(identifier=identifier):
+                node = {
+                    "node": "assignment",
+                    "left": {
+                        "node": "identifier",
+                        "value": identifier,
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "123",
+                    },
+                }
+                gen = CodeGenerator(None)
+                result = gen.generate_assignment_code(node)
+
+                self.assertEqual(result, -1)
+                self.assertEqual(gen.code, [f"LWI $4, 123", f"LWI $2, {address}", "SW $2, $4"])
+
     def test_generate_binary_operator_code_add(self):
         node = {
             "node": "binary_operator",

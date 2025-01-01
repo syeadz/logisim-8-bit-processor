@@ -522,10 +522,43 @@ class CodeGenerator:
         """
         value_reg = self.generate_expression_code(node["right"])
         reg = self.is_var_in_reg(node["left"]["value"])
+        var_name = node["left"]["value"]
         if reg:
             self.code.append(f"MOV ${reg}, ${value_reg}")
             self.release_reg(value_reg)
             return reg
+        if var_name == "SEG0":
+            self.code.append("LWI $2, 0x1F")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "SEG1":
+            self.code.append("LWI $2, 0x3F")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "SEG2":
+            self.code.append("LWI $2, 0x5F")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "SEG3":
+            self.code.append("LWI $2, 0x9F")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "TERMI":
+            self.code.append("LWI $2, 0x7F")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "VIDX":
+            self.code.append("LWI $2, 0xBF")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "VIDY":
+            self.code.append("LWI $2, 0xDF")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
+        if var_name == "VIDI":
+            self.code.append("LWI $2, 0xFF")
+            self.code.append(f"SW $2, ${value_reg}")
+            return -1
         else:
             raise Exception(
                 f"Variable {node['left']['value']} not found, should have been declared or assigned"
