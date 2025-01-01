@@ -341,9 +341,13 @@ if __name__ == "__main__":
             hex_instruction = binary_to_hex(binary)
             f.write(f"{hex_instruction} ")
             if operands and operands[0].upper() in LABEL_TABLE:
-                print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]} ({hex(LABEL_TABLE[operands[0].upper()])})")
+                print(
+                    f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]} ({hex(LABEL_TABLE[operands[0].upper()])})"
+                )
             else:
-                print(f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}")
+                print(
+                    f"{count} ({hex(count)}):\t{binary[:2]} {binary[2:]}\t{line.split('#', 1)[0]}"
+                )
             count += 1
 
     # Print the number of instructions and the percentage of total memory used

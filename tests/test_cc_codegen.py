@@ -94,7 +94,9 @@ class TestCCCodeGen(unittest.TestCase):
                 result = gen.generate_assignment_code(node)
 
                 self.assertEqual(result, -1)
-                self.assertEqual(gen.code, [f"LWI $4, 123", f"LWI $2, {address}", "SW $2, $4"])
+                self.assertEqual(
+                    gen.code, ["LWI $4, 123", f"LWI $2, {address}", "SW $2, $4"]
+                )
 
     def test_generate_binary_operator_code_add(self):
         node = {

@@ -1,6 +1,7 @@
 import unittest
 from cc import tokenize, Parser, CodeGenerator
 
+
 class TestCCRegisterPool(unittest.TestCase):
     def test_remove_missing_regs(self):
         cc = CodeGenerator(None)
@@ -13,6 +14,7 @@ class TestCCRegisterPool(unittest.TestCase):
         self.assertEqual(cc.register_pool[4], "a")
         self.assertEqual(cc.register_pool[5], None)
         self.assertEqual(cc.register_pool[6], "c")
+
 
 class TestCCParser(unittest.TestCase):
     def test_tokenize(self):
@@ -900,6 +902,8 @@ class TestCCParser(unittest.TestCase):
                 "value": "5",
             },
         }
+
+        self.assertEqual(node, expected)
 
     def test_parse_assignment_expression(self):
         code = "a = a + 2"

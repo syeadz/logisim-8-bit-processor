@@ -429,7 +429,7 @@ class CodeGenerator:
             # TODO: add logic for spilling
             raise Exception("No free registers available")
         for reg, value in self.register_pool.items():
-            if value == None:
+            if value is None:
                 self.register_pool[reg] = var
                 self.free_regs -= 1
                 return reg
@@ -449,7 +449,7 @@ class CodeGenerator:
             if value == var:
                 return reg
         return None
-    
+
     def remove_missing_regs(self, list_of_regs):
         """
         Remove registers that are not in the list of used registers.
@@ -575,7 +575,7 @@ class CodeGenerator:
         for reg, value in self.register_pool.items():
             if value:
                 used_regs.append(reg)
-        
+
         self.label_counter += 1
         if_label = f"if_{self.label_counter}"
         end_label = f"end_if_{self.label_counter}"
@@ -599,7 +599,6 @@ class CodeGenerator:
             self.generate_block_code(node["else_body"])
 
         self.code.append(f"{end_label}:")
-        
 
     def generate_while_statement_code(self, node):
         """
@@ -609,7 +608,7 @@ class CodeGenerator:
         for reg, value in self.register_pool.items():
             if value:
                 used_regs.append(reg)
-        
+
         self.label_counter += 1
         while_label = f"while_{self.label_counter}"
         end_label = f"end_while_{self.label_counter}"
@@ -635,7 +634,7 @@ class CodeGenerator:
         for reg, value in self.register_pool.items():
             if value:
                 used_regs.append(reg)
-        
+
         self.label_counter += 1
         for_label = f"for_{self.label_counter}"
         end_label = f"end_for_{self.label_counter}"
@@ -659,14 +658,15 @@ class CodeGenerator:
         self.generate_block_code(node["body"])
 
         update_reg = None
-        if node["update"]: # TODO: support unary operators
+        if node["update"]:  # TODO: support unary operators
             if node["update"]["node"] == "assignment":
                 update_reg = self.generate_assignment_code(node["update"])
             else:
                 raise Exception("TODO: Implement other update types")
-            if update_reg != init_reg: # the init register should be updated
-                raise Exception("Update register should be the same as the init register")
-
+            if update_reg != init_reg:  # the init register should be updated
+                raise Exception(
+                    "Update register should be the same as the init register"
+                )
 
         self.code.append(f"GOTO {for_label}")
 
