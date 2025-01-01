@@ -470,10 +470,10 @@ class CodeGenerator:
 
     def generate_block_code(self, block):
         # Could push and pop registers here, for now just free all previously unused registers at the end of the block
-        list_of_used_args = []
+        used_regs = []
         for reg, value in self.register_pool.items():
             if value:
-                list_of_used_args.append(reg)
+                used_regs.append(reg)
 
         for item in block:
             if item["node"] == "declaration":
@@ -492,9 +492,7 @@ class CodeGenerator:
                 self.generate_return_statement_code(item)
 
         # Free all registers that were not used previously since they are not needed
-        for reg in list_of_used_args:
-            if self.register_pool[reg] not in [item["name"] for item in block]:
-                self.release_reg(reg)
+        self.remove_missing_regs(used_regs)
 
         # if end of main function, add halt
         if self.call_stack and self.call_stack[-1] == "main":
@@ -592,7 +590,51 @@ class CodeGenerator:
         self.code.append(f"{end_label}:")
 
     def generate_for_statement_code(self, node):
-        pass
+        """
+        Generate code for a for statement
+        """
+        used_regs = []
+        for reg, value in self.register_pool.items():
+            if value:
+                used_regs.append(reg)
+        
+        self.label_counter += 1
+        for_label = f"for_{self.label_counter}"
+        end_label = f"end_for_{self.label_counter}"
+
+        init_reg = None
+        if node["init"]:
+            if node["init"]["node"] == "declaration":
+                init_reg = self.generate_declaration_code(node["init"])
+            else:
+                init_reg = self.generate_assignment_code(node["init"])
+
+        self.code.append(f"{for_label}:")
+
+        if node["condition"]:
+            condition_reg = self.generate_expression_code(node["condition"])
+            self.code.append(f"CMP ${condition_reg}, $1")
+            if condition_reg not in used_regs:
+                self.release_reg(condition_reg)
+            self.code.append(f"JPNZ {end_label}")
+
+        self.generate_block_code(node["body"])
+
+        update_reg = None
+        if node["update"]: # TODO: support unary operators
+            if node["update"]["node"] == "assignment":
+                update_reg = self.generate_assignment_code(node["update"])
+            else:
+                raise Exception("TODO: Implement other update types")
+            if update_reg != init_reg: # the init register should be updated
+                raise Exception("Update register should be the same as the init register")
+
+
+        self.code.append(f"GOTO {for_label}")
+
+        self.code.append(f"{end_label}:")
+        if init_reg and init_reg not in used_regs:
+            self.release_reg(init_reg)
 
     def generate_return_statement_code(self, node):
         pass
@@ -610,35 +652,41 @@ class CodeGenerator:
         else:
             raise Exception("TODO: Implement other expression types")
 
+    # TODO: do not overwrite registers to hold result. Instead, use a separate register for the result
     def generate_binary_operator_code(self, node) -> int:
         """
         Generate code for a binary operator, returns the register where the result is stored.
         """
         left = self.generate_expression_code(node["left"])
         right = self.generate_expression_code(node["right"])
+        result = self.get_free_reg("result")
+
+        self.code.append(f"MOV ${result}, ${left}")
 
         if node["op"] in ["+", "-"]:
             operation = {
                 "+": "ADD",
                 "-": "SUB",
             }[node["op"]]
-            self.code.append(f"{operation} ${left}, ${right}")
-            self.release_reg(right)
-            return left
+            self.code.append(f"{operation} ${result}, ${right}")
         if node["op"] in ["<", ">"]:
             self.label_counter += 1
             label = f"skip_set_{self.label_counter}"
 
-            self.code.append(f"CMP ${left}, ${right}")
+            self.code.append(f"CMP ${result}, ${right}")
             if node["op"] == "<":
                 self.code.append(f"JPNC {label}")
             if node["op"] == ">":
                 self.code.append(f"JPC {label}")
-            self.release_reg(right)
 
-            self.code.append(f"MOV ${left}, $1")
+            self.code.append(f"MOV ${result}, $1")
             self.code.append(f"{label}:")
-            return left
+
+        if node["right"]["node"] == "number":
+            self.release_reg(right)
+        if node["left"]["node"] == "number":
+            self.release_reg(left)
+        return result
 
     def generate_identifier_code(self, node) -> int:
         """

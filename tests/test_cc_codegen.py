@@ -81,8 +81,10 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(None)
         result = gen.generate_binary_operator_code(node)
 
-        self.assertEqual(result, 4)
-        self.assertEqual(gen.code, ["LWI $4, 123", "LWI $5, 456", "ADD $4, $5"])
+        self.assertEqual(result, 6)
+        self.assertEqual(
+            gen.code, ["LWI $4, 123", "LWI $5, 456", "MOV $6, $4", "ADD $6, $5"]
+        )
 
     def test_generate_binary_operator_code_subtract(self):
         node = {
@@ -100,8 +102,10 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(None)
         result = gen.generate_binary_operator_code(node)
 
-        self.assertEqual(result, 4)
-        self.assertEqual(gen.code, ["LWI $4, 123", "LWI $5, 456", "SUB $4, $5"])
+        self.assertEqual(result, 6)
+        self.assertEqual(
+            gen.code, ["LWI $4, 123", "LWI $5, 456", "MOV $6, $4", "SUB $6, $5"]
+        )
 
     def test_generate_binary_operator_code_less_than(self):
         node = {
@@ -119,15 +123,16 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(None)
         result = gen.generate_binary_operator_code(node)
 
-        self.assertEqual(result, 4)
+        self.assertEqual(result, 6)
         self.assertEqual(
             gen.code,
             [
                 "LWI $4, 123",
                 "LWI $5, 255",
-                "CMP $4, $5",
+                "MOV $6, $4",
+                "CMP $6, $5",
                 "JPNC skip_set_1",
-                "MOV $4, $1",
+                "MOV $6, $1",
                 "skip_set_1:",
             ],
         )
@@ -148,15 +153,16 @@ class TestCCCodeGen(unittest.TestCase):
         gen = CodeGenerator(None)
         result = gen.generate_binary_operator_code(node)
 
-        self.assertEqual(result, 4)
+        self.assertEqual(result, 6)
         self.assertEqual(
             gen.code,
             [
                 "LWI $4, 123",
                 "LWI $5, 255",
-                "CMP $4, $5",
+                "MOV $6, $4",
+                "CMP $6, $5",
                 "JPC skip_set_1",
-                "MOV $4, $1",
+                "MOV $6, $1",
                 "skip_set_1:",
             ],
         )
@@ -269,11 +275,12 @@ class TestCCCodeGen(unittest.TestCase):
                 "if_1:",
                 "LWI $4, 123",
                 "LWI $5, 255",
-                "CMP $4, $5",
+                "MOV $6, $4",
+                "CMP $6, $5",
                 "JPNC skip_set_2",
-                "MOV $4, $1",
+                "MOV $6, $1",
                 "skip_set_2:",
-                "CMP $4, $1",
+                "CMP $6, $1",
                 "JPNZ end_if_1",
                 "LWI $4, 1",
                 "MOV $5, $4",
@@ -311,5 +318,76 @@ class TestCCCodeGen(unittest.TestCase):
                 "MOV $6, $5",
                 "GOTO while_1",
                 "end_while_1:",
+            ],
+        )
+
+    def test_generate_for_statement_code(self):
+        node = {
+            "node": "for_statement",
+            "init": {
+                "node": "declaration",
+                "type": "char",
+                "name": "a",
+                "value": {
+                    "node": "number",
+                    "value": "0",
+                },
+            },
+            "condition": {
+                "node": "binary_operator",
+                "op": "<",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "number",
+                    "value": "5",
+                },
+            },
+            "update": {
+                "node": "assignment",
+                "left": {
+                    "node": "identifier",
+                    "value": "a",
+                },
+                "right": {
+                    "node": "binary_operator",
+                    "op": "+",
+                    "left": {
+                        "node": "identifier",
+                        "value": "a",
+                    },
+                    "right": {
+                        "node": "number",
+                        "value": "1",
+                    },
+                },
+            },
+            "body": [],
+        }
+        gen = CodeGenerator(None)
+        gen.generate_for_statement_code(node)
+
+        self.assertEqual(
+            gen.code,
+            [
+                "LWI $4, 0",
+                "MOV $5, $4",
+                "for_1:",
+                "LWI $4, 5",
+                "MOV $6, $5",
+                "CMP $6, $4",
+                "JPNC skip_set_2",
+                "MOV $6, $1",
+                "skip_set_2:",
+                "CMP $6, $1",
+                "JPNZ end_for_1",
+                "LWI $4, 1",
+                "MOV $6, $5",
+                "ADD $6, $4",
+                "MOV $5, $6",
+                "GOTO for_1",
+                "end_for_1:",
             ],
         )
