@@ -419,6 +419,7 @@ class CodeGenerator:
         self.free_regs = 12
 
         self.call_stack = []
+        self.block_depth = 0
 
     def get_free_reg(self, var) -> int:
         """
@@ -469,6 +470,8 @@ class CodeGenerator:
         self.generate_block_code(node["body"])
 
     def generate_block_code(self, block):
+        self.block_depth += 1
+
         # Could push and pop registers here, for now just free all previously unused registers at the end of the block
         used_regs = []
         for reg, value in self.register_pool.items():
@@ -495,8 +498,10 @@ class CodeGenerator:
         self.remove_missing_regs(used_regs)
 
         # if end of main function, add halt
-        if self.call_stack and self.call_stack[-1] == "main":
+        if self.call_stack and self.call_stack[-1] == "main" and self.block_depth == 1:
             self.code.append("HALT")
+
+        self.block_depth -= 1
 
     def generate_declaration_code(self, node) -> int:
         """
