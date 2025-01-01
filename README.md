@@ -53,7 +53,7 @@ This will generate a file called `if.hex` that can be loaded into the ROM in Log
 
 * `lib/terminal_lib.asm` - Library for writing to the terminal
 * `lib/video_lib.asm` - Library for writing to the video output
-* `lib/bcd_lib.asm` - Library for writing to the BCD registers and displaying numbers on the 7-segment displays
+* `lib/sevseg_lib.asm` - Library for displaying numbers on the 7-segment displays
 * `lib/math_lib.asm` - Library for basic math operations (multiplication, division)
 
 ### Examples
@@ -64,6 +64,7 @@ This will generate a file called `if.hex` that can be loaded into the ROM in Log
 * `examples/video.asm` - Writes a pattern to the video output with squares and colors
 * `examples/prime.asm` - Calculates prime numbers up to 231 and writes them to the terminal. This will take forever if you plan on reaching 231.
 * `examples/fib.asm` - Calculates the 13th Fibonacci number and writes it to the 7 segment display.
+* `examples/sevseg.asm` - Writes numbers to the 7-segment displays
 
 #### C Examples
 
@@ -149,18 +150,18 @@ $3 | Stack pointer
 * 8-bit memory addresses, first 5 bits for RAM, last 3 bits for specific memory ports xxxy yyyy
 * Can store 8-bit words to RAM locations 0x00 to 0x1E
 * 8 memory locations are mapped to ports. These ports are linked to different devices and registers in the logisim design.
-  * Port 0 (BCD0 Register): 0x1F
-  * Port 1 (BCD1 Register): 0x3F
-  * Port 2 (BCD2 Register): 0x5F
+  * Port 0 (SEG0 Register): 0x1F
+  * Port 1 (SEG1 Register): 0x3F
+  * Port 2 (SEG2 Register): 0x5F
   * Port 3 (Terminal Input): 0x7F
-  * Port 4 (BCD3 Register): 0x9F
+  * Port 4 (SEG3 Register): 0x9F
   * Port 5 (Video X register): 0xBF
   * Port 6 (Video Y register): 0xDF
   * Port 7 (Video Color Input): 0xFF
 
 ## Logisim Ports
 
-In the Logisim circuit, you have access to 4 BCDs, 1 Terminal, and 1 128 x 128 Video Output with Atari 2600 color palette (7 bits).
+In the Logisim circuit, you have access to 4 7-segment displays, 1 Terminal, and 1 128 x 128 Video Output with Atari 2600 color palette (7 bits).
 
 * Bit 7 in terminal input clears the terminal, and bit 7 in video color input clears the video output.
 

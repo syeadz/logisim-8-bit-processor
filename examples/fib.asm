@@ -1,7 +1,7 @@
 ; Calculates the fibonacci sequence up to 13 (233)
-; And displays the result in BCD
+; And displays the result in the 7-segment display
 
-#include lib/bcd_lib.asm
+#include lib/sevseg_lib.asm
 
 main:
     lwi $7, 0 # fib 0
@@ -28,5 +28,5 @@ fib:
 
 end:
     # print fib to bcd
-    call b_bcd0_display
+    call s_seg0_display
     halt
