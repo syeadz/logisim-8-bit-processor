@@ -676,16 +676,21 @@ class CodeGenerator:
             self.code.append(f"{operation} ${result}, ${right}")
         if node["op"] in ["<", ">"]:
             self.label_counter += 1
-            label = f"skip_set_{self.label_counter}"
+            set_1_label = f"set_{self.label_counter}"
+            end_label = f"end_set_{self.label_counter}"
 
             self.code.append(f"CMP ${result}, ${right}")
             if node["op"] == "<":
-                self.code.append(f"JPNC {label}")
+                self.code.append(f"JPC {set_1_label}")
             if node["op"] == ">":
-                self.code.append(f"JPC {label}")
+                self.code.append(f"JPNC {set_1_label}")
 
+            # Set result to 0
+            self.code.append(f"MOV ${result}, $0")
+            self.code.append(f"GOTO {end_label}")
+            self.code.append(f"{set_1_label}:")
             self.code.append(f"MOV ${result}, $1")
-            self.code.append(f"{label}:")
+            self.code.append(f"{end_label}:")
 
         if node["right"]["node"] == "number":
             self.release_reg(right)
