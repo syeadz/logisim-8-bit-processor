@@ -1,4 +1,5 @@
 module RAM (
+    input logic clk,           // Clock signal
     input logic [4:0] addr,    // 5-bit address for 32 locations
     input logic [7:0] data_in, // 8-bit data input
     input logic we,            // Write enable
@@ -15,11 +16,16 @@ module RAM (
         end
     end
 
-    always_comb begin
+    // Synchronous Write on clock edge
+    always_ff @(posedge clk) begin
         if (we) begin
-            ram[addr] = data_in;
+            ram[addr] <= data_in;  // Write to RAM on positive clock edge when 'we' is high
         end
-        data_out = ram[addr];
+    end
+
+    // Asynchronous Read
+    always_comb begin
+        data_out = ram[addr];  // Output the value at the address immediately when addr changes
     end
     
 endmodule
