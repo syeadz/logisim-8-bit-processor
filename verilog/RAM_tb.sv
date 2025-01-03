@@ -22,10 +22,10 @@ module RAM_tb;
 
     // Initialize signals and run the test
     initial begin
-        // Initialize signals
         $dumpfile("RAM_tb.vcd");
         $dumpvars(0, RAM_tb);
 
+        // Initialize signals
         clk = 0;         // Initial clock state (low)
         addr = 5'b0;     // Initial address
         data_in = 8'b0;  // Initial data input
