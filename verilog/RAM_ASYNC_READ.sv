@@ -1,4 +1,4 @@
-module RAM (
+module RAM_ASYNC_READ (
     input logic clk,           // Clock signal
     input logic [4:0] addr,    // 5-bit address for 32 locations
     input logic [7:0] data_in, // 8-bit data input
